@@ -9,6 +9,8 @@ TagManager:
   - bee_free
   - bee_restricted
   - pellet
+  - drop_cells
+  - spawn_cells
   layers:
   - Default
   - TransparentFX

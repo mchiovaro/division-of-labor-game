@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 
 
 /// <exclude />
-public class workCellScript : MonoBehaviour
+public class DropCellScript : MonoBehaviour
 {
     bool contact_on = false;
     Collider2D player_coll;
@@ -32,7 +32,9 @@ public class workCellScript : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         player_coll = collision.collider;
-   //     Debug.Log(" bee in contact ");
+        Debug.Log(" bee in contact ");
+
+
         contact_on = true;
 
     }
@@ -42,7 +44,6 @@ public class workCellScript : MonoBehaviour
     {
         contact_on = true;
         player_coll = other;
-
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -61,17 +62,14 @@ public class workCellScript : MonoBehaviour
 
                 Debug.Log(player_coll.transform.gameObject.tag);
 
+                Debug.Log("dropped pellet");
+
                 GameObject pellet_ = player_coll.transform.GetChild(0).gameObject;
-
-                //check that we got the white and not the yellow disk child.
-                if(!pellet_.gameObject.tag.Equals("pellet"))
-                    pellet_ = player_coll.transform.GetChild(1).gameObject;
-
-
                 pellet_.transform.SetParent(null);
                 pellet_.transform.position = transform.position;
                 pellet_.GetComponent<Collider2D>().enabled = true;
-
+                pellet_.GetComponent<Rigidbody2D>().isKinematic = true;
+              //  pellet_.GetComponent<Collider2D>().isTrigger = true;
                 player_coll.GetComponent<BeeTap>().grabbed_on = false;
 
                 if (player_coll.tag.Equals("bee_free"))
@@ -82,8 +80,6 @@ public class workCellScript : MonoBehaviour
                 {
                     player_coll.GetComponent<SpriteRenderer>().color = Color.cyan;
                 }
-
-
             }
         }
 

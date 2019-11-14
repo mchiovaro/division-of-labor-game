@@ -12,7 +12,7 @@ using Random = UnityEngine.Random;
 public class BeeTap : MonoBehaviour
 {
     bool contact_on = false;
-    bool grabbed_on = false;
+    public bool grabbed_on = false;
     bool pellet_in_workCell = false;
     Collider2D player_coll;
     Collider2D[] work_cell;
@@ -44,6 +44,8 @@ public class BeeTap : MonoBehaviour
 			player_coll = collision.collider;
 
         	contact_on = true;
+
+       //     Debug.Log(" touched pellet " + contact_on );
 		}
     }
 
@@ -64,31 +66,22 @@ public class BeeTap : MonoBehaviour
         if (contact_on)
         {
 
+            Debug.Log(" grabbed = " + grabbed_on + "  pell in WC = " + pellet_in_workCell);
+
             if (!grabbed_on && !pellet_in_workCell)
             {
-                grabbed_on = true;
-                
 
+                grabbed_on = true;
 
                 player_coll.transform.SetParent(transform);
 
               //  disable pellet collider
                player_coll.GetComponent<Collider2D>().enabled = false;
-
+                player_coll.GetComponent<Rigidbody2D>().isKinematic = true;
 
                  player_coll.transform.position = transform.position;
 
-                GetComponent<SpriteRenderer>().color = Color.white;
-
-                //cancel collider
-                //set position to = player_coll.transform
-            }else
-            {
-                grabbed_on = false;
-                transform.SetParent(null);
-
-                //restore collider
-                //drop right to the left 
+                GetComponent<SpriteRenderer>().color = player_coll.GetComponent<SpriteRenderer>().color;
 
             }
 

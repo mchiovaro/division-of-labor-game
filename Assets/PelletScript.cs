@@ -22,10 +22,15 @@ public class PelletScript : MonoBehaviour
     private float scale_size = 0;
     private Color pellet_color = new Color(1, 1, 1);
 
+    private Transform yellow_disk;
+
     private void Start()
     {
         work_cell = GameObject.FindGameObjectWithTag("work_row_middle").GetComponentsInChildren<Collider2D>();
-        transform.GetChild(0).transform.localScale = new Vector3(scale_size, scale_size, 0);
+        
+        yellow_disk = transform.GetChild(0);
+        
+        yellow_disk.localScale = new Vector3(scale_size, scale_size, 0);
 
         Debug.Log(" colliders = " + work_cell.Length);
     }
@@ -54,6 +59,19 @@ public class PelletScript : MonoBehaviour
 
     }
 
+       private void OnTriggerEnter2D(Collision2D collision)
+    {
+        player_coll = collision.collider;
+
+        contact_on = true;
+    }
+
+    private void OnTriggerExit2D(Collision2D collision)
+    {
+        contact_on = false;
+
+    }
+
     //this happens when the pellet is tapped
     private void tappedHandler2(object sender, EventArgs eventArgs)
     {
@@ -76,12 +94,17 @@ public class PelletScript : MonoBehaviour
                 {
                     scale_size += process_rate;
 
-                    transform.GetChild(0).transform.localScale = new Vector3(scale_size, scale_size, 0);
+                    yellow_disk.localScale = new Vector3(scale_size, scale_size, 0);
                 }
                 else
                 {
                     scale_size = 1;
-                    transform.GetChild(0).transform.localScale = new Vector3(scale_size, scale_size, 0);
+
+                    Destroy(yellow_disk.gameObject);
+                    GetComponent<SpriteRenderer>().color = new Color(1,204.0f/255,0);
+
+
+               //     yellow_disk.localScale = new Vector3(scale_size, scale_size, 0);
                 }
             }
 
