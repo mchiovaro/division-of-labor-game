@@ -3,6 +3,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using TouchScript.Gestures;
 using TouchScript.Gestures.TransformGestures;
 using TouchScript.Gestures.TransformGestures.Base;
@@ -166,7 +167,7 @@ namespace TouchScript.Behaviors
         #endregion
 
         #region Unity methods
-        GameObject work_row; 
+        GameObject work_row, drop_cells, spawn_cells; 
         const int BEE_FREE = 1;
         const int BEE_RESTRICTED = 0;
 
@@ -175,11 +176,16 @@ namespace TouchScript.Behaviors
 
         private int from_where = 0;
 
+       
+
         private int player_type; //0 = restricted, 1 = free
         private float SPRITE_WIDTH;
         private void Start()
         {
+
             work_row = GameObject.FindGameObjectWithTag("work_row_middle");
+            drop_cells = GameObject.FindGameObjectWithTag("drop_cells");
+            spawn_cells = GameObject.FindGameObjectWithTag("spawn_cells");
             
             if(gameObject.tag.Equals("bee_free")){player_type = BEE_FREE;}
             if(gameObject.tag.Equals("bee_restricted")){ player_type = BEE_RESTRICTED;}
@@ -416,6 +422,13 @@ namespace TouchScript.Behaviors
             float barrier_right = work_row.transform.GetChild(0).position.x + 0.8f*(SPRITE_WIDTH/2);
             float barrier_left = work_row.transform.GetChild(0).position.x - 0.8f*(SPRITE_WIDTH/2);
             float barrier_bottom = work_row.transform.GetChild(0).position.y - 0.8f*(SPRITE_WIDTH/2);
+            float barrier_drop = drop_cells.transform.GetChild(0).position.x + 0.8f*(SPRITE_WIDTH/2);
+            float barrier_spawn = spawn_cells.transform.GetChild(0).position.x - 0.8f*(SPRITE_WIDTH/2);
+
+
+            if (targetPosition.x < barrier_drop + SPRITE_WIDTH/2)targetPosition2.x = barrier_drop + SPRITE_WIDTH/2;
+            if (targetPosition.x > barrier_spawn - SPRITE_WIDTH/2)targetPosition2.x = barrier_spawn - SPRITE_WIDTH/2;
+
 
             if (player_type == BEE_RESTRICTED) //restricted
             {

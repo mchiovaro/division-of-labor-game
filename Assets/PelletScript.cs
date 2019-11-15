@@ -59,14 +59,14 @@ public class PelletScript : MonoBehaviour
 
     }
 
-       private void OnTriggerEnter2D(Collision2D collision)
+       private void OnTriggerEnter2D(Collider2D collider_)
     {
-        player_coll = collision.collider;
+        player_coll = collider_;
 
         contact_on = true;
     }
 
-    private void OnTriggerExit2D(Collision2D collision)
+    private void OnTriggerExit2D(Collider2D collider_)
     {
         contact_on = false;
 
