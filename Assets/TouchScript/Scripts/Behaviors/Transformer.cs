@@ -167,7 +167,7 @@ namespace TouchScript.Behaviors
         #endregion
 
         #region Unity methods
-        GameObject work_row, drop_cells, spawn_cells; 
+        GameObject work_row, drop_cells, spawn_cells;
         const int BEE_FREE = 1;
         const int BEE_RESTRICTED = 0;
 
@@ -176,7 +176,7 @@ namespace TouchScript.Behaviors
 
         private int from_where = 0;
 
-       
+
 
         private int player_type; //0 = restricted, 1 = free
         private float SPRITE_WIDTH;
@@ -186,20 +186,21 @@ namespace TouchScript.Behaviors
             work_row = GameObject.FindGameObjectWithTag("work_row_middle");
             drop_cells = GameObject.FindGameObjectWithTag("drop_cells");
             spawn_cells = GameObject.FindGameObjectWithTag("spawn_cells");
-            
-            if(gameObject.tag.Equals("bee_free")){player_type = BEE_FREE;}
-            if(gameObject.tag.Equals("bee_restricted")){ player_type = BEE_RESTRICTED;}
 
-            if(transform.position.x < 0)
+            if (gameObject.tag.Equals("bee_free")) { player_type = BEE_FREE; }
+            if (gameObject.tag.Equals("bee_restricted")) { player_type = BEE_RESTRICTED; }
+
+            if (transform.position.x < 0)
             {
                 from_where = FROM_LEFT;
-            }else
+            }
+            else
             {
                 from_where = FROM_RIGHT;
             }
             SPRITE_WIDTH = GetComponent<SpriteRenderer>().sprite.bounds.size.x;
 
-        //    Debug.Log(" sprite width = " + GetComponent<SpriteRenderer>().sprite.bounds.size.x);
+            //    Debug.Log(" sprite width = " + GetComponent<SpriteRenderer>().sprite.bounds.size.x);
         }
 
         private void Awake()
@@ -368,18 +369,10 @@ namespace TouchScript.Behaviors
 
             if ((transformMask & TransformGesture.TransformType.Translation) != 0)
             {
-                // if (targetPosition.x < 1)
-                // {
-                //     cachedTransform.position = new Vector3(1, targetPosition.y, targetPosition.z);
-                // }
-                // else
-                // {
-                //     cachedTransform.position = targetPosition;
-                // }
 
                 checkBoundaries();
             }
-            
+
             transformMask = TransformGesture.TransformType.None;
         }
 
@@ -419,39 +412,30 @@ namespace TouchScript.Behaviors
             //108 is the width of square, 104 the width of disk.
             // Let the player enter the work cell a little bit so they can be in touch with the pellet
             // in order to grab it. Hence the 0.8f coefficient.
-            float barrier_right = work_row.transform.GetChild(0).position.x + 0.8f*(SPRITE_WIDTH/2);
-            float barrier_left = work_row.transform.GetChild(0).position.x - 0.8f*(SPRITE_WIDTH/2);
-            float barrier_bottom = work_row.transform.GetChild(0).position.y - 0.8f*(SPRITE_WIDTH/2);
-            float barrier_drop = drop_cells.transform.GetChild(0).position.x + 0.8f*(SPRITE_WIDTH/2);
-            float barrier_spawn = spawn_cells.transform.GetChild(0).position.x - 0.8f*(SPRITE_WIDTH/2);
+            float barrier_right = work_row.transform.GetChild(0).position.x + 0.8f * (SPRITE_WIDTH / 2);
+            float barrier_left = work_row.transform.GetChild(0).position.x - 0.8f * (SPRITE_WIDTH / 2);
+            float barrier_top = work_row.transform.GetChild(work_row.transform.childCount - 1).position.y + 1.5f * (SPRITE_WIDTH / 2);
+            float barrier_drop = drop_cells.transform.GetChild(0).position.x + 0.9f * (SPRITE_WIDTH);
+            float barrier_spawn = spawn_cells.transform.GetChild(0).position.x - 0.8f * (SPRITE_WIDTH / 2);
 
+            if (targetPosition.x < barrier_drop + SPRITE_WIDTH / 2) targetPosition2.x = barrier_drop + SPRITE_WIDTH / 2;
+            if (targetPosition.x > barrier_spawn - SPRITE_WIDTH / 2) targetPosition2.x = barrier_spawn - SPRITE_WIDTH / 2;
 
-            if (targetPosition.x < barrier_drop + SPRITE_WIDTH/2)targetPosition2.x = barrier_drop + SPRITE_WIDTH/2;
-            if (targetPosition.x > barrier_spawn - SPRITE_WIDTH/2)targetPosition2.x = barrier_spawn - SPRITE_WIDTH/2;
-
-
-            if (player_type == BEE_RESTRICTED) //restricted
+            //coming from the top right
+            if (from_where == FROM_RIGHT && targetPosition.x < barrier_right + SPRITE_WIDTH / 2 && targetPosition.y < barrier_top)
             {
-                if (targetPosition.x < barrier_right + SPRITE_WIDTH/2)targetPosition2.x = barrier_right + SPRITE_WIDTH/2;
+                targetPosition2.x = barrier_right + SPRITE_WIDTH / 2;
             }
-
-            if (player_type == BEE_FREE) //restricted
+            else
+            if (from_where == FROM_LEFT && targetPosition.x > barrier_left - SPRITE_WIDTH / 2 && targetPosition.y < barrier_top)
             {
-                //coming from the top right
-                if (from_where == FROM_RIGHT && targetPosition.x < barrier_right + SPRITE_WIDTH/2 && targetPosition.y > barrier_bottom)
-                {
-                    targetPosition2.x = barrier_right + SPRITE_WIDTH/2;
-                }else
-                if (from_where == FROM_LEFT && targetPosition.x > barrier_left - SPRITE_WIDTH/2 && targetPosition.y > barrier_bottom)
-                {
-                    targetPosition2.x = barrier_left - SPRITE_WIDTH/2;
-                }
+                targetPosition2.x = barrier_left - SPRITE_WIDTH / 2;
             }
 
             cachedTransform.position = targetPosition2;
 
-            if(targetPosition2.x <0){from_where = FROM_LEFT;}
-            else{from_where = FROM_RIGHT;}
+            if (targetPosition2.x < 0) { from_where = FROM_LEFT; }
+            else { from_where = FROM_RIGHT; }
 
         }
 

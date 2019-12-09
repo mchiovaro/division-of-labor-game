@@ -11,6 +11,16 @@ TagManager:
   - pellet
   - drop_cells
   - spawn_cells
+  - button_red
+  - button_blue
+  - button_green
+  - button_grey
+  - button_group
+  - drop_cells2
+  - button_circle
+  - button_square
+  - button_triangle
+  - work_cell
   layers:
   - Default
   - TransparentFX
