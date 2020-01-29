@@ -24,6 +24,7 @@ public class Exit_app_script : MonoBehaviour
     private const int CONDITION_RANDOM_RATE = 3;
 
     private int current_cond = 0;
+    private bool practice_mode = true;
 
     private List<float> spawn_rate = new List<float>(new float[MAX_PELLETS]);
 
@@ -150,7 +151,9 @@ public class Exit_app_script : MonoBehaviour
                     GameObject pel_ = Instantiate(foodPrefab, spawn_cells.transform.GetChild(avail_spawn[rand_ini]).position, Quaternion.identity);
                     pel_.GetComponent<PelletScript>().pelletID = current_spawn - 1;
 
-                    pel_.GetComponent<PelletScript>().saveToBuffer("SPAWN");
+                    if (!practice_mode){                  
+                        pel_.GetComponent<PelletScript>().saveToBuffer("SPAWN");
+                    }
 
                 }
             }
@@ -197,7 +200,11 @@ public class Exit_app_script : MonoBehaviour
         if (dropped_pellets.Count == MAX_PELLETS)
         {
             running_ = false;
-            saveToDisk();
+
+            // 
+            if (!practice_mode){
+                saveToDisk();
+            }
 
             //RESET EVERYTHING
             dropped_pellets.Clear();
@@ -231,8 +238,15 @@ public class Exit_app_script : MonoBehaviour
                 spawn_cells.transform.GetChild(ii).GetComponent<SpawnCellScript>().contact_on = false;
             }
 
-            current_cond++;
-            current_trial++;
+            // practice round runs only once
+            // if more attempts are needed, for now they just restart game
+            if (practice_mode){
+                practice_mode = false;
+            }
+            else{
+                current_cond++;
+                current_trial++;
+            }            
 
             checkCondition();
 
@@ -299,7 +313,13 @@ public class Exit_app_script : MonoBehaviour
         string path = "Assets/Resources/Data/RATest_" + ParticipantNumber + ".csv";
         StreamWriter writer = new StreamWriter(path, true);
 
-        if(current_cond ==0)
+        if(current_cond ==0 && practice_mode)
+        {
+            string header_string = "Date,Participant,RA,Trial,Condition,Timestamp,BeeOldX,BeeOldY,BeeYoungX,BeeYoungY";
+            writer.WriteLine(header_string);
+        }
+
+        if(current_cond ==0 && !practice_mode)
         {
             string header_string = "Date,Participant,RA,Trial,Condition,Timestamp,BeeOldX,BeeOldY,BeeYoungX,BeeYoungY";
 
