@@ -5,7 +5,7 @@
 [Bb]uilds/
 Assets/AssetStoreTools*
 # Data output directory
-Assets/Resources/Data
+Assets/Resources/Data/*
 
 # Visual Studio cache directory
 .vs/
