@@ -310,7 +310,9 @@ public class Exit_app_script : MonoBehaviour
 
     void saveToDisk()
     {
-        string path = "Assets/Resources/Data/RATest_" + ParticipantNumber + ".csv";
+        string filetitle = RA_initials + "-" + ParticipantNumber;
+        string path = "Assets/Resources/Data/"+ filetitle + ".csv";
+        
         StreamWriter writer = new StreamWriter(path, true);
 
         if(current_cond ==0 && practice_mode)
@@ -395,7 +397,7 @@ public class Exit_app_script : MonoBehaviour
 
         int partOffSet = 1 + (ParticipantNumber - 1) * 6;
 
-        TextAsset iniFile = Resources.Load<TextAsset>("Data/participant_sheet2");
+        TextAsset iniFile = Resources.Load<TextAsset>("loadParams/participant_sheet2");
 
         string[] row = iniFile.text.Split(new char[] { '\n' });
 
