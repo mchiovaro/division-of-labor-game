@@ -89,7 +89,7 @@ public class Exit_app_script : MonoBehaviour
         checkCondition();
 
         ui_image.enabled = true;
-        ui_text.text = "Ready to begin?";
+        ui_text.text = "Ready to practice?";
 
         //allocate memory for Data to save
         data_beeFree.allPositions = new List<Vector3>(100000);
