@@ -14,10 +14,12 @@ public class Exit_app_script : MonoBehaviour
     public string RA_initials;
     public int current_trial = 0;
 
-    private const int MAX_PELLETS = 20; // 20 cells
+    private const int MAX_PELLETS = 20; // 20 pellets for 20 cells
 
     //
     private List<int> conditions_ = new List<int>(6);
+
+    // ending experiment condition
     private const int CONDITION_EXPERIMENT_OVER = 0;
 
     // rates of incoming food pellets
@@ -26,8 +28,9 @@ public class Exit_app_script : MonoBehaviour
     private const int CONDITION_RANDOM_RATE = 3;
 
     // initial conditions
+    // current_cond is really the current trial number
     private int current_cond = 0;
-    private bool practice_mode = true;
+    private bool practice_mode = true; // true to include the practice trial
 
     // allows for the rate of spawn to be changed in condition checkCondition()
     private List<float> spawn_rate = new List<float>(new float[MAX_PELLETS]);
@@ -113,20 +116,18 @@ public class Exit_app_script : MonoBehaviour
         // set camera ratio
         ScToWRatio = 1080 / (2 * Camera.main.orthographicSize);
 
-        // ?
+        // setting up the playing field and camera?
         for (int ii = 0; ii < work_cells.transform.childCount; ii++)
             work_cells.transform.GetChild(ii).position = new Vector3(0, +ii * 108 / ScToWRatio - Camera.main.orthographicSize + 108 / (2 * ScToWRatio));// + 3 * 108 / (2 * ScToWRatio));
-
         for (int ii = 0; ii < drop_cells.transform.childCount; ii++)
             drop_cells.transform.GetChild(ii).position = new Vector3(-5.4f * (6.0f / 5) - 5.4f / 10, ii * 108 / ScToWRatio - Camera.main.orthographicSize + 108 / (2 * ScToWRatio));
-
         for (int ii = 0; ii < spawn_cells.transform.childCount; ii++)
             spawn_cells.transform.GetChild(ii).position = new Vector3(5.4f * (6.0f / 5), ii * 108 / ScToWRatio - Camera.main.orthographicSize + 108 / (2 * ScToWRatio));
 
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         // ?
         float timestamp = Time.time - timeIni;
@@ -149,6 +150,7 @@ public class Exit_app_script : MonoBehaviour
                         avail_spawn.Add(ii);
                 }
 
+                // if there are more pellets, keep spawning
                 if (avail_spawn.Count > 0)
                 {
                     next_spawn = Time.time + spawn_rate[current_spawn];
@@ -165,9 +167,11 @@ public class Exit_app_script : MonoBehaviour
                 }
             }
 
+            // grab timstamp for each player and add to allTimeStamps (x, y coord)
             data_beeFree.allTimeStamps.Add(timestamp);
             data_beeRestrict.allTimeStamps.Add(timestamp);
 
+            // grab position for each player and add to allTimeStamps (x, y coord)
             data_beeFree.allPositions.Add(beeFree.transform.position);
             data_beeRestrict.allPositions.Add(beeRestrict.transform.position);
            
@@ -197,6 +201,80 @@ public class Exit_app_script : MonoBehaviour
 
     }
 
+    // fixed rate for data saving (50/s)
+    private void FixedUpdate()
+    {
+
+        // Alright, so when a round is in session this code should be fine up 
+        // here ** I think. ** What may throw this off is between trials, when 
+        // some of these variables won't be found. We need to run this, see if 
+        // it throws errors, and if not, check that the sampling rate is 
+        // constant (we will need some other timestamp in here to check that)!
+
+        string filetitle = RA_initials + "-" + ParticipantNumber;
+        string path = "Assets/Data/" + filetitle + ".csv";
+
+        StreamWriter writer = new StreamWriter(path, true);
+
+        // if this is the practice round
+        if (current_cond == 0 && practice_mode)
+        {
+            string header_string = "Date,Participant,RA,Trial,Condition,Timestamp,BeeOldX,BeeOldY,BeeYoungX,BeeYoungY";
+            writer.WriteLine(header_string);
+        }
+
+        // if this is the first real round
+        if (current_cond == 0 && !practice_mode)
+        {
+            string header_string = "Date,Participant,RA,Trial,Condition,Timestamp,BeeOldX,BeeOldY,BeeYoungX,BeeYoungY";
+
+            // create column for max number of pellets
+            for (int jj = 0; jj < MAX_PELLETS; jj++)
+                header_string = header_string + ",Pellet" + jj + "Event";
+
+            writer.WriteLine(header_string);
+        }
+
+        List<List<string>> all_pell_ev = new List<List<string>>();
+
+        for (int ii = 0; ii < MAX_PELLETS; ii++)
+        {
+            List<string> _pell = new List<string>(new string[data_beeFree.allPositions.Count]);
+            all_pell_ev.Add(_pell);
+        }
+
+        for (int pelInd = 0; pelInd < MAX_PELLETS; pelInd++)
+        {
+            for (int frameInd = 0; frameInd < pellData[pelInd].frameNum.Count; frameInd++)
+            {
+                all_pell_ev[pelInd][pellData[pelInd].frameNum[frameInd]] = pellData[pelInd].pelletEvent[frameInd];
+            }
+
+        }
+
+        // new string for pellet data?
+        List<string> pell_ = new List<string>(new string[data_beeFree.allPositions.Count]);
+
+        //
+        for (int ii = 0; ii < pellData[0].frameNum.Count; ii++)
+            pell_[pellData[0].frameNum[ii]] = pellData[0].pelletEvent[ii];
+
+        // saving lines here
+        for (int ii = 0; ii < data_beeFree.allPositions.Count; ii++)
+        {
+            string next_line = System.DateTime.Now + "," + ParticipantNumber + "," + RA_initials + "," + current_trial + "," + conditions_[current_cond]
+                + "," + data_beeFree.allTimeStamps[ii] + "," + data_beeFree.allPositions[ii].x + ","
+                + data_beeFree.allPositions[ii].y + "," + data_beeRestrict.allPositions[ii].x + "," + data_beeRestrict.allPositions[ii].y;
+
+            for (int jj = 0; jj < all_pell_ev.Count; jj++)
+                next_line = next_line + "," + all_pell_ev[jj][ii];
+
+            writer.WriteLine(next_line);
+
+        }
+        writer.Close();
+    }
+
     // drops a pellet
     public void addPellet(GameObject pell_)
     {
@@ -212,7 +290,7 @@ public class Exit_app_script : MonoBehaviour
 
             // save data if it's not from practice
             if (!practice_mode){
-                saveToDisk();
+                //saveToDisk();// was saveToDisk();
             }
 
             //RESETS EVERYTHING
@@ -325,24 +403,32 @@ public class Exit_app_script : MonoBehaviour
 
     }
 
+    // IF FIXEDUPDATE() WORKS, NIX THIS
     // save data here
     void saveToDisk()
     {
+
+        // need something here to make this saving happen at a fixed rate
+        
+
         string filetitle = RA_initials + "-" + ParticipantNumber;
         string path = "Assets/Resources/Data/"+ filetitle + ".csv";
         
         StreamWriter writer = new StreamWriter(path, true);
 
+        // if this is the practice round
         if(current_cond ==0 && practice_mode)
         {
             string header_string = "Date,Participant,RA,Trial,Condition,Timestamp,BeeOldX,BeeOldY,BeeYoungX,BeeYoungY";
             writer.WriteLine(header_string);
         }
 
+        // if this is the first real round
         if(current_cond ==0 && !practice_mode)
         {
             string header_string = "Date,Participant,RA,Trial,Condition,Timestamp,BeeOldX,BeeOldY,BeeYoungX,BeeYoungY";
 
+            // create column for max number of pellets
             for (int jj = 0; jj < MAX_PELLETS; jj++)
                 header_string = header_string + ",Pellet" + jj+"Event";
 
@@ -366,20 +452,18 @@ public class Exit_app_script : MonoBehaviour
 
         }
 
-
+        // new string for pellet data?
         List<string> pell_ = new List<string>(new string [data_beeFree.allPositions.Count]);
-
 
         for(int ii = 0; ii< pellData[0].frameNum.Count; ii++)
             pell_[pellData[0].frameNum[ii]] = pellData[0].pelletEvent[ii];
             
-
+        // saving lines here
         for (int ii = 0; ii < data_beeFree.allPositions.Count; ii++)
         {
             string next_line = System.DateTime.Now + "," + ParticipantNumber + "," + RA_initials + "," + current_trial + "," + conditions_[current_cond]
                 + "," + data_beeFree.allTimeStamps[ii] + "," + data_beeFree.allPositions[ii].x + ","
                 + data_beeFree.allPositions[ii].y + "," + data_beeRestrict.allPositions[ii].x + "," + data_beeRestrict.allPositions[ii].y;
-             // + "," + all_pell_ev[0][ii];// pell_[ii];
 
             for(int jj =0; jj< all_pell_ev.Count; jj++)
                 next_line = next_line + "," + all_pell_ev[jj][ii];
@@ -398,6 +482,7 @@ public class Exit_app_script : MonoBehaviour
         string path = "Assets/Resources/Data/RATest.csv";
         StreamWriter writer = new StreamWriter(path, true);
 
+
         for (int ii = 0; ii < data_beeFree.allPositions.Count; ii++)
         {
             string next_line = data_beeFree.allTimeStamps[ii] + "," + data_beeFree.allPositions[ii].x + "," + data_beeFree.allPositions[ii].y + "," + data_beeRestrict.allPositions[ii].x + "," + data_beeRestrict.allPositions[ii].y;
@@ -411,6 +496,7 @@ public class Exit_app_script : MonoBehaviour
 
     }
 
+    // grabbing randomization of condition types for trials
     void loadParams()
     {
 
@@ -437,7 +523,7 @@ public class Exit_app_script : MonoBehaviour
 
     }
 
-
+    // is this not in use?
     void saveToBuffer(float timeNow, int evendCode, int conditionNow, int targ)
     {
         /* //save to buffer
