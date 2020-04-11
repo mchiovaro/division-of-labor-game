@@ -115,13 +115,14 @@ public class Exit_app_script : MonoBehaviour
         // set camera ratio
         ScToWRatio = 1080 / (2 * Camera.main.orthographicSize);
 
-        // setting up the playing field and camera?
+        // setting up camera ratio of the field
+        float ratio = 108 / ScToWRatio - Camera.main.orthographicSize + 108 / (2 * ScToWRatio);
         for (int ii = 0; ii < work_cells.transform.childCount; ii++)
-            work_cells.transform.GetChild(ii).position = new Vector3(0, +ii * 108 / ScToWRatio - Camera.main.orthographicSize + 108 / (2 * ScToWRatio));// + 3 * 108 / (2 * ScToWRatio));
+            work_cells.transform.GetChild(ii).position = new Vector3(0, +ii * ratio);// + 3 * 108 / (2 * ScToWRatio));
         for (int ii = 0; ii < drop_cells.transform.childCount; ii++)
-            drop_cells.transform.GetChild(ii).position = new Vector3(-5.4f * (6.0f / 5) - 5.4f / 10, ii * 108 / ScToWRatio - Camera.main.orthographicSize + 108 / (2 * ScToWRatio));
+            drop_cells.transform.GetChild(ii).position = new Vector3(-5.4f * (6.0f / 5) - 5.4f / 10, ii * ratio);
         for (int ii = 0; ii < spawn_cells.transform.childCount; ii++)
-            spawn_cells.transform.GetChild(ii).position = new Vector3(5.4f * (6.0f / 5), ii * 108 / ScToWRatio - Camera.main.orthographicSize + 108 / (2 * ScToWRatio));
+            spawn_cells.transform.GetChild(ii).position = new Vector3(5.4f * (6.0f / 5), ii * ratio);
 
     }
 
@@ -377,12 +378,12 @@ public class Exit_app_script : MonoBehaviour
         
         StreamWriter writer = new StreamWriter(path, true);
 
-        // if this is the practice round
-        //if(current_cond ==0 && practice_mode)
-        //{
-        //    string header_string = "Date,Participant,RA,Trial,Condition,Timestamp,BeeOldX,BeeOldY,BeeYoungX,BeeYoungY";
-        //    writer.WriteLine(header_string);
-        //}
+    
+        /* if(current_cond ==0 && practice_mode)
+        {
+            string header_string = "Date,Participant,RA,Trial,Condition,Timestamp,BeeOldX,BeeOldY,BeeYoungX,BeeYoungY";
+            writer.WriteLine(header_string);
+        } */
 
         // if this is the first real round
         if(current_cond ==0 && !practice_mode)
@@ -441,8 +442,8 @@ public class Exit_app_script : MonoBehaviour
 
     }
 
-    // not used anywhere; can this get nixed?
-    void saveAndQuit()
+    // not in use
+    /* void saveAndQuit()
     {
         quitting = true;
         string path = "Assets/Resources/Data/RATest.csv";
@@ -459,7 +460,7 @@ public class Exit_app_script : MonoBehaviour
 
         Application.Quit();
 
-    }
+    } */
 
     // grabbing randomization of condition types for trials
     void loadParams()
@@ -487,14 +488,16 @@ public class Exit_app_script : MonoBehaviour
 
         foreach (int iii in conditions_) Debug.Log(iii);
 
-        //add the stopping condition at the end.
+        //add the stopping condition at the end
         conditions_.Add(CONDITION_EXPERIMENT_OVER);
 
     }
 
-    // is this not in use?
-    void saveToBuffer(float timeNow, int evendCode, int conditionNow, int targ)
-    {
+}
+
+    // not in use
+    /* void saveToBuffer(float timeNow, int evendCode, int conditionNow, int targ) */
+    
         /* //save to buffer
          dataSave_.time_stamp.Add(timeNow);
          dataSave_.event_code.Add(evendCode);
@@ -502,6 +505,3 @@ public class Exit_app_script : MonoBehaviour
          dataSave_.target_optotype.Add(targ);
          dataSave_.target_x.Add(0);
          dataSave_.target_y.Add(0);*/
-    }
-
-}
