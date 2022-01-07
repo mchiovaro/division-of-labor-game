@@ -57,8 +57,8 @@ public class Exit_app_script : MonoBehaviour
     // data structures for position and time
     public struct SaveData
     {
-        public List<Vector3> allPositions; 
-        public List<float> allTimeStamps; 
+        public List<Vector3> allPositions;
+        public List<float> allTimeStamps;
     }
 
     // data structures for pellet events and frames
@@ -88,7 +88,7 @@ public class Exit_app_script : MonoBehaviour
             pD.pelletEvent = new List<string>();
             pD.frameNum = new List<int>();
 
-            pellData.Add(pD); // 
+            pellData.Add(pD); //
         }
 
         // set up parameters and conditions
@@ -117,12 +117,6 @@ public class Exit_app_script : MonoBehaviour
 
         // setting up camera ratio of the field
         float ratio = 108 / ScToWRatio - Camera.main.orthographicSize + 108 / (2 * ScToWRatio);
-        for (int ii = 0; ii < work_cells.transform.childCount; ii++)
-            work_cells.transform.GetChild(ii).position = new Vector3(0, +ii * ratio);// + 3 * 108 / (2 * ScToWRatio));
-        for (int ii = 0; ii < drop_cells.transform.childCount; ii++)
-            drop_cells.transform.GetChild(ii).position = new Vector3(-5.4f * (6.0f / 5) - 5.4f / 10, ii * ratio);
-        for (int ii = 0; ii < spawn_cells.transform.childCount; ii++)
-            spawn_cells.transform.GetChild(ii).position = new Vector3(5.4f * (6.0f / 5), ii * ratio);
 
     }
 
@@ -160,8 +154,10 @@ public class Exit_app_script : MonoBehaviour
 
                     int rand_ini = Random.Range(0, avail_spawn.Count);
 
+                    // spawn a pellet prefab
                     GameObject pel_ = Instantiate(foodPrefab, spawn_cells.transform.GetChild(avail_spawn[rand_ini]).position, Quaternion.identity);
                     pel_.GetComponent<PelletScript>().pelletID = current_spawn - 1;
+                    //Debug.Log("pellet spawned");
 
                     if (!practice_mode) {
                         pel_.GetComponent<PelletScript>().saveToBuffer("SPAWN");
@@ -179,7 +175,7 @@ public class Exit_app_script : MonoBehaviour
 
         }
 
-                    // what's this doing?
+        // what's this doing?
         else if (!(current_cond == conditions_.Count - 1))
         {
             // if space bar is pressed between trials
@@ -202,7 +198,7 @@ public class Exit_app_script : MonoBehaviour
 
         }
 
-        else
+        else //allow for quitting
         {
             // allow for quitting with escape key
             if (Input.GetKey("escape")) Application.Quit();
@@ -223,7 +219,7 @@ public class Exit_app_script : MonoBehaviour
             // create writer
             StreamWriter writer = new StreamWriter(path, true);
 
-            // create the string
+            // create the string with the participant position data
             string next_line = System.DateTime.Now + "," + ParticipantNumber + ","
                     + RA_initials + "," + current_trial + ","
                     + conditions_[current_cond] + "," + Time.time + ","
@@ -298,7 +294,7 @@ public class Exit_app_script : MonoBehaviour
             else {
                 current_cond++;
                 current_trial++;
-            }            
+            }
 
             checkCondition();
 
@@ -375,10 +371,10 @@ public class Exit_app_script : MonoBehaviour
 
         string filetitle = RA_initials + "-" + ParticipantNumber;
         string path = "Assets/Resources/Data/"+ filetitle + "-pellet_data.csv";
-        
+
         StreamWriter writer = new StreamWriter(path, true);
 
-    
+
         /* if(current_cond ==0 && practice_mode)
         {
             string header_string = "Date,Participant,RA,Trial,Condition,Timestamp,BeeOldX,BeeOldY,BeeYoungX,BeeYoungY";
@@ -419,17 +415,17 @@ public class Exit_app_script : MonoBehaviour
 
         for(int ii = 0; ii< pellData[0].frameNum.Count; ii++)
             pell_[pellData[0].frameNum[ii]] = pellData[0].pelletEvent[ii];
-            
+
         // save data
         for (int ii = 0; ii < data_beeFree.allPositions.Count; ii++)
         {
             string next_line = System.DateTime.Now + "," + ParticipantNumber + "," + RA_initials + "," + current_trial + "," + conditions_[current_cond]
                 + "," + data_beeFree.allTimeStamps[ii];
 
-            /* This loop is the reason for the duplicate time stamps (I think). 
+            /* This loop is the reason for the duplicate time stamps (I think).
             * It takes each pellet and creates a line for any pellet event.
             * If two pellet events happen in the same frame, it will create
-            * two separate lines. We will just need to collapse across duplicate 
+            * two separate lines. We will just need to collapse across duplicate
             * timestamps to see all pellet events at the moment. */
             for (int jj =0; jj< all_pell_ev.Count; jj++)
                 next_line = next_line + "," + all_pell_ev[jj][ii];
@@ -486,7 +482,7 @@ public class Exit_app_script : MonoBehaviour
             conditions_.Add(temptemp);
         }
 
-        foreach (int iii in conditions_) Debug.Log(iii);
+        //foreach (int iii in conditions_) Debug.Log(iii);
 
         //add the stopping condition at the end
         conditions_.Add(CONDITION_EXPERIMENT_OVER);
@@ -497,7 +493,7 @@ public class Exit_app_script : MonoBehaviour
 
     // not in use
     /* void saveToBuffer(float timeNow, int evendCode, int conditionNow, int targ) */
-    
+
         /* //save to buffer
          dataSave_.time_stamp.Add(timeNow);
          dataSave_.event_code.Add(evendCode);

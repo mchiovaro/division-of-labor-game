@@ -1,4 +1,4 @@
-﻿
+﻿// script for the ending cells
 
 using System;
 using TouchScript.Gestures;
@@ -9,15 +9,16 @@ using Random = UnityEngine.Random;
 /// <exclude />
 public class DropCellScript : MonoBehaviour
 {
+  // not in contact with the cell
     public bool contact_on = false;
     Collider2D player_coll;
 
+    // counter for taps to drop the pellet in the cell
     public int dropTapCounter = 0;
     public int pelletCounter = 0;
 
     private void Start()
     {
-
     }
 
     private void OnEnable()
@@ -30,13 +31,11 @@ public class DropCellScript : MonoBehaviour
         GetComponent<TapGesture>().Tapped -= tappedHandler2;
     }
 
-
+    // when player collides with the drop cell
     private void OnCollisionEnter2D(Collision2D collision)
     {
         player_coll = collision.collider;
-
         contact_on = true;
-
     }
 
 
@@ -74,8 +73,10 @@ public class DropCellScript : MonoBehaviour
 
                     GameObject pellet_ = player_coll.transform.GetChild(0).gameObject;
 
+                    // log that the pellet was dropped
                     pellet_.GetComponent<PelletScript>().saveToBuffer("DR_DROP");
 
+                    // render the pellet in the cell?
                     pellet_.GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.5f, 0.0f);
                     pellet_.transform.SetParent(null);
                     pellet_.transform.position = transform.position + new Vector3(offset,0,0);
@@ -85,6 +86,7 @@ public class DropCellScript : MonoBehaviour
 
                     pelletCounter++;
 
+                    // turn the player back to their color?
                     if (player_coll.tag.Equals("bee_free"))
                     {
                         player_coll.GetComponent<SpriteRenderer>().color = Color.red;
@@ -94,13 +96,15 @@ public class DropCellScript : MonoBehaviour
                         player_coll.GetComponent<SpriteRenderer>().color = Color.blue;
                     }
 
+                    // reset dropping taps to 0
                     dropTapCounter = 0;
 
+                    // add a pellet to that cell?
                     Camera.main.GetComponent<Exit_app_script>().addPellet(pellet_);
 
                 }
 
-                
+
             }
         }
 

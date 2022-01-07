@@ -21,6 +21,7 @@ TagManager:
   - button_square
   - button_triangle
   - work_cell
+  - spawn_cell
   layers:
   - Default
   - TransparentFX

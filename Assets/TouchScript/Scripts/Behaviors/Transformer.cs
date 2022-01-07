@@ -1,4 +1,7 @@
 /*
+
+What does this script do??
+
  * @author Valentin Simonov / http://va.lent.in/
  */
 
@@ -167,29 +170,32 @@ namespace TouchScript.Behaviors
         #endregion
 
         #region Unity methods
+
+        // define our objects
         GameObject work_row, drop_cells, spawn_cells;
         const int BEE_FREE = 1;
         const int BEE_RESTRICTED = 0;
 
-        const int FROM_LEFT = 0;
-        const int FROM_RIGHT = 1;
+        public int FROM_LEFT = -1;
+        public int FROM_RIGHT = 1;
 
-        private int from_where = 0;
-
-
+        public int from_where = 0;
 
         private int player_type; //0 = restricted, 1 = free
         private float SPRITE_WIDTH;
         private void Start()
         {
-
+            // find the cells
             work_row = GameObject.FindGameObjectWithTag("work_row_middle");
+            //work_cell_top = GameObject.FindGameObjectWithTag("work_cell_top");
+            //work_cell_bottom = GameObject.FindGameObjectWithTag("work_cell_bottom");
             drop_cells = GameObject.FindGameObjectWithTag("drop_cells");
             spawn_cells = GameObject.FindGameObjectWithTag("spawn_cells");
-
+            // tag the player types
             if (gameObject.tag.Equals("bee_free")) { player_type = BEE_FREE; }
             if (gameObject.tag.Equals("bee_restricted")) { player_type = BEE_RESTRICTED; }
 
+            // set the starting sides they're coming from
             if (transform.position.x < 0)
             {
                 from_where = FROM_LEFT;
@@ -409,33 +415,43 @@ namespace TouchScript.Behaviors
         private void checkBoundaries()
         {
             Vector3 targetPosition2 = targetPosition;
+
             //108 is the width of square, 104 the width of disk.
-            // Let the player enter the work cell a little bit so they can be in touch with the pellet
-            // in order to grab it. Hence the 0.8f coefficient.
+            // create barriers for spawn/work/drop cells
+            // let the player enter the cell a little (0.8f) so they can be in touch with the pellet to grab it
             float barrier_right = work_row.transform.GetChild(0).position.x + 0.8f * (SPRITE_WIDTH / 2);
             float barrier_left = work_row.transform.GetChild(0).position.x - 0.8f * (SPRITE_WIDTH / 2);
-            float barrier_top = work_row.transform.GetChild(work_row.transform.childCount - 1).position.y + 1.5f * (SPRITE_WIDTH / 2);
-            float barrier_drop = drop_cells.transform.GetChild(0).position.x + 0.9f * (SPRITE_WIDTH);
+            float barrier_top = work_row.transform.GetChild(0).position.y + 0.8f * (SPRITE_WIDTH / 2);
+            float barrier_bottom = work_row.transform.GetChild(7).position.y - 0.8f * (SPRITE_WIDTH / 2);
+            float barrier_drop = drop_cells.transform.GetChild(0).position.x + 0.8f * (SPRITE_WIDTH / 2);
             float barrier_spawn = spawn_cells.transform.GetChild(0).position.x - 0.8f * (SPRITE_WIDTH / 2);
 
-            if (targetPosition.x < barrier_drop + SPRITE_WIDTH / 2) targetPosition2.x = barrier_drop + SPRITE_WIDTH / 2;
+            // SPAWN and DROP: don't allow any passing
+            if (targetPosition.x < barrier_drop + SPRITE_WIDTH) targetPosition2.x = barrier_drop + SPRITE_WIDTH;
             if (targetPosition.x > barrier_spawn - SPRITE_WIDTH / 2) targetPosition2.x = barrier_spawn - SPRITE_WIDTH / 2;
 
-            //coming from the top right
-            if (from_where == FROM_RIGHT && targetPosition.x < barrier_right + SPRITE_WIDTH / 2 && targetPosition.y < barrier_top)
+            //WORK ROW: if they are coming from the right and they are within the two barriers, block them                                   // add a little room so they can overlap
+            if (from_where == FROM_RIGHT && targetPosition.x < barrier_right + SPRITE_WIDTH / 2 && targetPosition.y < barrier_top + SPRITE_WIDTH / 4 && targetPosition.y > barrier_bottom - SPRITE_WIDTH / 4)
             {
                 targetPosition2.x = barrier_right + SPRITE_WIDTH / 2;
             }
-            else
-            if (from_where == FROM_LEFT && targetPosition.x > barrier_left - SPRITE_WIDTH / 2 && targetPosition.y < barrier_top)
+            //WORK ROW: if they are coming from the left and they are within the two barriers, block them                                     // add a little room so they can overlap
+            else if (from_where == FROM_LEFT && targetPosition.x > barrier_left - SPRITE_WIDTH / 2 && targetPosition.y < barrier_top + SPRITE_WIDTH / 4 && targetPosition.y > barrier_bottom - SPRITE_WIDTH / 4)
             {
                 targetPosition2.x = barrier_left - SPRITE_WIDTH / 2;
             }
 
             cachedTransform.position = targetPosition2;
 
-            if (targetPosition2.x < 0) { from_where = FROM_LEFT; }
-            else { from_where = FROM_RIGHT; }
+            // identify which side they're coming from
+            if (targetPosition2.x < 0)
+            {
+                from_where = FROM_LEFT;
+            }
+            else
+            {
+                from_where = FROM_RIGHT;
+            }
 
         }
 

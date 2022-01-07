@@ -1,4 +1,6 @@
 ﻿/*
+This script is for the "harder" tapping sequence, where the player must tap in
+a pattern of small shapes nested in the pellet.
  * @author Valentin Simonov / http://va.lent.in/
  */
 
@@ -7,32 +9,30 @@ using TouchScript.Gestures;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-
 /// <exclude />
 public class PelletSequenceButton : MonoBehaviour
 {
 
-    private const int BUTTON_TRIANGLE = 1;
-    private const int BUTTON_SQUARE = 2;
-    private const int BUTTON_CIRCLE = 3;
+    private const int button_triangle = 1;
+    private const int button_square = 2;
+    private const int button_circle = 3;
+    private int myButton = 0;
 
-    private int myButtonColor = 0;
+    public bool free_contact_on;
+    public bool restrict_contact_on;
 
     private void Start()
     {
-
     }
 
     private void Awake()
     {
         if (transform.tag.Equals("button_triangle"))
-            myButtonColor = BUTTON_TRIANGLE;
+            myButton = button_triangle;
         if (transform.tag.Equals("button_square"))
-            myButtonColor = BUTTON_SQUARE;
+            myButton = button_square;
         if (transform.tag.Equals("button_circle"))
-            myButtonColor = BUTTON_CIRCLE;
-
-
+            myButton = button_circle;
     }
 
     private void OnEnable()
@@ -45,15 +45,13 @@ public class PelletSequenceButton : MonoBehaviour
         GetComponent<TapGesture>().Tapped -= tappedHandler2;
     }
 
-
-    //this happens when the pellet is tapped
+    //this happens when the pellet is tapped?
     private void tappedHandler2(object sender, EventArgs eventArgs)
     {
+      Debug.Log("tapped " + myButton);
+      transform.parent.parent.GetComponent<PelletScript>().addToSequence(myButton, GetComponent<SpriteRenderer>());
 
-        Debug.Log(transform.parent.parent.GetComponent<PelletScript>().player_coll.gameObject.tag);
-
-            if(transform.parent.parent.GetComponent<PelletScript>().player_coll.gameObject.tag.Equals ("bee_free"))
-                transform.parent.parent.GetComponent<PelletScript>().addToSequence(myButtonColor, GetComponent<SpriteRenderer>());
+      //}
 
     }
 }
