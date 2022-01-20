@@ -10,7 +10,7 @@ public class Exit_app_script : MonoBehaviour
     public GameObject foodPrefab, beeFree, beeRestrict;
 
     // input parameters
-    public int ParticipantNumber;
+    public int ParticipantNumber; // pulls from the excel sheet with conditions
     public string RA_initials;
 
     // trial counter
@@ -20,10 +20,26 @@ public class Exit_app_script : MonoBehaviour
     private const int MAX_PELLETS = 20;
 
     // initialize conditions list
-    private List<int> conditions_ = new List<int>(6);
+    private List<int> td_condition = new List<int>(6);
+    private List<int> ie_condition = new List<int>(1);
+    private List<int> com_condition = new List<int>(1);
 
     // ending experiment condition
     private const int CONDITION_EXPERIMENT_OVER = 0;
+
+    // conditions for task demand
+    public const int FREE_HARD = 1;
+    public const int RESTRICT_HARD = 2;
+    public const int BOTH_HARD = 3;
+
+    // condition for individual effectivities
+    public const int FREE_PASS = 1;
+    public const int RESTRICT_PASS = 2;
+
+    // condition for communication
+    public const int TALK_SILENCE = 1;
+    public const int TALK_BUTTONS = 2;
+    public const int TALK_FREE = 3;
 
     // rates of incoming food pellets
     private const int CONDITION_CONSTANT_RATE = 1;
@@ -176,7 +192,7 @@ public class Exit_app_script : MonoBehaviour
         }
 
         // what's this doing?
-        else if (!(current_cond == conditions_.Count - 1))
+        else if (!(current_cond == td_condition.Count - 1))
         {
             // if space bar is pressed between trials
             if (Input.GetKey("space"))
@@ -222,7 +238,7 @@ public class Exit_app_script : MonoBehaviour
             // create the string with the participant position data
             string next_line = System.DateTime.Now + "," + ParticipantNumber + ","
                     + RA_initials + "," + current_trial + ","
-                    + conditions_[current_cond] + "," + Time.time + ","
+                    + td_condition[current_cond] + "," + Time.time + ","
                     + beeFree.transform.position.x + ","
                     + beeFree.transform.position.y + ","
                     + beeRestrict.transform.position.x + ","
@@ -311,7 +327,7 @@ public class Exit_app_script : MonoBehaviour
 
     void checkCondition()
     {
-        switch (conditions_[current_cond])
+        switch (td_condition[current_cond])
         {
             // constant rate condition
             case CONDITION_CONSTANT_RATE:
@@ -419,7 +435,7 @@ public class Exit_app_script : MonoBehaviour
         // save data
         for (int ii = 0; ii < data_beeFree.allPositions.Count; ii++)
         {
-            string next_line = System.DateTime.Now + "," + ParticipantNumber + "," + RA_initials + "," + current_trial + "," + conditions_[current_cond]
+            string next_line = System.DateTime.Now + "," + ParticipantNumber + "," + RA_initials + "," + current_trial + "," + td_condition[current_cond]
                 + "," + data_beeFree.allTimeStamps[ii];
 
             /* This loop is the reason for the duplicate time stamps (I think).
@@ -462,7 +478,8 @@ public class Exit_app_script : MonoBehaviour
     void loadParams()
     {
 
-        // what is this doing?
+        // this is the offset to identify the first row for the data for that group
+        // e.g., participantNumber 2 starts at row 7
         int partOffSet = 1 + (ParticipantNumber - 1) * 6;
 
         // read in condition orders
@@ -471,21 +488,26 @@ public class Exit_app_script : MonoBehaviour
         // create string to split out rows of conditions
         string[] row = iniFile.text.Split(new char[] { '\n' });
 
+        // increase by 1 until we hit six
         for (int ii = 0; ii < 6; ii++)
         {
-            // create string to split columns of conditions
+            // create string to split columns of conditions for the row
             string[] col = row[partOffSet + ii].Split(new char[] { ',' });
 
+            // create temp variable to hold the condition (by row)
             int temptemp;
-            // parse apart conditions from file
+
+            // parse apart conditions from file going down column 1
             int.TryParse(col[1], out temptemp);
-            conditions_.Add(temptemp);
+
+            // add the condition to a string
+            td_condition.Add(temptemp);
         }
 
-        //foreach (int iii in conditions_) Debug.Log(iii);
+        //foreach (int iii in td_condition) Debug.Log(iii);
 
         //add the stopping condition at the end
-        conditions_.Add(CONDITION_EXPERIMENT_OVER);
+        td_condition.Add(CONDITION_EXPERIMENT_OVER);
 
     }
 
