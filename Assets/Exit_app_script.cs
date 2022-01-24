@@ -20,9 +20,10 @@ public class Exit_app_script : MonoBehaviour
     private const int MAX_PELLETS = 20;
 
     // initialize conditions list
-    private List<int> td_condition = new List<int>(6);
-    private List<int> ie_condition = new List<int>(1);
-    private List<int> com_condition = new List<int>(1);
+    public List<int> td_condition = new List<int>(7);
+    public List<int> ie_condition = new List<int>(1);
+    public List<int> com_condition = new List<int>(1);
+    public List<int> size_condition = new List<int>(1);
 
     // ending experiment condition
     private const int CONDITION_EXPERIMENT_OVER = 0;
@@ -43,8 +44,8 @@ public class Exit_app_script : MonoBehaviour
 
     // rates of incoming food pellets
     private const int CONDITION_CONSTANT_RATE = 1;
-    private const int CONDITION_INCREASING_RATE = 2;
-    private const int CONDITION_RANDOM_RATE = 3;
+    //private const int CONDITION_INCREASING_RATE = 2;
+    //private const int CONDITION_RANDOM_RATE = 3;
 
     // initial conditions
     // current_cond is really just another trial counter, but then pulls from the list of conditions
@@ -107,9 +108,13 @@ public class Exit_app_script : MonoBehaviour
             pellData.Add(pD); //
         }
 
+        // set spawn rate to every 2 seconds
+        for (int ii = 0; ii < MAX_PELLETS; ii++)
+            spawn_rate[ii] = 2.0f;
+
         // set up parameters and conditions
         loadParams();
-        checkCondition();
+        //checkCondition();
 
         // set up practice screen
         ui_image.enabled = true;
@@ -273,6 +278,8 @@ public class Exit_app_script : MonoBehaviour
             //RESETS EVERYTHING
             dropped_pellets.Clear();
 
+
+
             GameObject[] allPellets = GameObject.FindGameObjectsWithTag("pellet");
             foreach (GameObject ggoo in allPellets) Destroy(ggoo);
 
@@ -329,6 +336,8 @@ public class Exit_app_script : MonoBehaviour
     {
         switch (td_condition[current_cond])
         {
+
+
             // constant rate condition
             case CONDITION_CONSTANT_RATE:
 
@@ -336,35 +345,9 @@ public class Exit_app_script : MonoBehaviour
                 ui_text.text = "Round Finished. \n Ready for next round?";
 
                 // keeps spawn rate at 5.0f
-                for (int ii = 0; ii < MAX_PELLETS; ii++)
-                    spawn_rate[ii] = 5.0f;//.Add(5.0f);
+                //for (int ii = 0; ii < MAX_PELLETS; ii++)
+                //    spawn_rate[ii] = 5.0f;
 
-                break;
-
-            // monotinic increasing condition
-            case CONDITION_INCREASING_RATE:
-                ui_image.enabled = true;
-                ui_text.text = "Round Finished. \n Ready for next round?";
-
-                // starts at 7.0f and adds 0.25f each time a pellet spawns
-                // why is there a minus here?
-                for (int ii = 0; ii < MAX_PELLETS; ii++)
-                {
-                    spawn_rate[ii] = 7.0f - ii * 0.25f;
-
-                    // reset to 0.25f if current rate is less than it
-                    if (spawn_rate[ii] <= 0.25f) spawn_rate[ii] = 0.25f;
-                }
-
-                break;
-
-            // random rate condition
-            case CONDITION_RANDOM_RATE:
-                ui_image.enabled = true;
-                ui_text.text = "Round Finished. \n Ready for next round?";
-
-                for (int ii = 0; ii < MAX_PELLETS; ii++)
-                    spawn_rate[ii] = Random.Range(0.5f, 6.0f);
                 break;
 
             // end screen
@@ -454,72 +437,78 @@ public class Exit_app_script : MonoBehaviour
 
     }
 
-    // not in use
-    /* void saveAndQuit()
-    {
-        quitting = true;
-        string path = "Assets/Resources/Data/RATest.csv";
-        StreamWriter writer = new StreamWriter(path, true);
-
-        for (int ii = 0; ii < data_beeFree.allPositions.Count; ii++)
-        {
-            string next_line = data_beeFree.allTimeStamps[ii] + "," + data_beeFree.allPositions[ii].x + "," + data_beeFree.allPositions[ii].y + "," + data_beeRestrict.allPositions[ii].x + "," + data_beeRestrict.allPositions[ii].y;
-
-            writer.WriteLine(next_line);
-
-        }
-        writer.Close();
-
-        Application.Quit();
-
-    } */
-
     // grabbing randomization of condition types for trials
     void loadParams()
     {
 
-        // this is the offset to identify the first row for the data for that group
-        // e.g., participantNumber 2 starts at row 7
-        int partOffSet = 1 + (ParticipantNumber - 1) * 6;
-
         // read in condition orders
-        TextAsset iniFile = Resources.Load<TextAsset>("loadParams/participant_sheet2");
+        TextAsset iniFile = Resources.Load<TextAsset>("loadParams/conditions");
 
         // create string to split out rows of conditions
         string[] row = iniFile.text.Split(new char[] { '\n' });
 
-        // increase by 1 until we hit six
-        for (int ii = 0; ii < 6; ii++)
-        {
-            // create string to split columns of conditions for the row
-            string[] col = row[partOffSet + ii].Split(new char[] { ',' });
+        // create string to split columns of conditions for the row
+        string[] col = row[ParticipantNumber].Split(new char[] { ',' });
 
-            // create temp variable to hold the condition (by row)
-            int temptemp;
+    // td_condition
+
+        // increase by 1 until we hit six
+        for (int ii = 2; ii < 8; ii++)
+        {
+
+            // create temp variable to hold the condition
+            int temp_td;
 
             // parse apart conditions from file going down column 1
-            int.TryParse(col[1], out temptemp);
+            int.TryParse(col[ii], out temp_td);
+            Debug.Log("td_condition = " + temp_td);
 
             // add the condition to a string
-            td_condition.Add(temptemp);
+            td_condition.Add(temp_td);
         }
-
-        //foreach (int iii in td_condition) Debug.Log(iii);
 
         //add the stopping condition at the end
         td_condition.Add(CONDITION_EXPERIMENT_OVER);
 
+        // made sure td_condition is being generated correctly (with 0 at the end for closing the game)
+        //Debug.Log("td_condition = " + td_condition[0] + td_condition[1] + td_condition[2] + td_condition[3] + td_condition[4] + td_condition[5] + td_condition[6]);
+
+    // ie_condition
+
+        // create temp variable to hold the condition
+        int temp_ie;
+
+        // parse apart conditions from file going down column 1
+        int.TryParse(col[1], out temp_ie);
+        Debug.Log("ie_condition = " + temp_ie);
+
+        // add the condition to a string
+        ie_condition.Add(temp_ie);
+
+    // com_condition
+
+        // create temp variable to hold the condition
+        int temp_com;
+
+        // parse apart conditions from file going down column 1
+        int.TryParse(col[8], out temp_com);
+        Debug.Log("com_condition = " + temp_com);
+
+        // add the condition to a string
+        com_condition.Add(temp_com);
+
+    // size_condition: number of participants
+
+        // create temp variable to hold the condition
+        int temp_size;
+
+        // parse apart conditions from file going down column 1
+        int.TryParse(col[9], out temp_size);
+        Debug.Log("size_condition = " + temp_size);
+
+        // add the condition to a string
+        com_condition.Add(temp_size);
+
     }
 
 }
-
-    // not in use
-    /* void saveToBuffer(float timeNow, int evendCode, int conditionNow, int targ) */
-
-        /* //save to buffer
-         dataSave_.time_stamp.Add(timeNow);
-         dataSave_.event_code.Add(evendCode);
-         dataSave_.current_cond.Add(conditionNow);
-         dataSave_.target_optotype.Add(targ);
-         dataSave_.target_x.Add(0);
-         dataSave_.target_y.Add(0);*/
