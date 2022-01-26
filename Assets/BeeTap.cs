@@ -22,41 +22,46 @@ public class BeeTap : MonoBehaviour
     private float scale_size = 0;
     private Color pellet_color = new Color(1, 1, 1);
 
+    // add reference to Exit_app_script to grab ie_condition
+    Exit_app_script exitappscript;
+
+    // define our objects
+    GameObject work_row, drop_cells, spawn_cells, beeFree, beeRestrict;
+
+    // read in size_condition from Exit_app_script.cs
+    private int ie_cond;
+
     void Awake ()
     {
 
       grabbed_on = false;
       Debug.Log("GRABBED SET TO FALSE");
 
+      // find the cells
+      work_row = GameObject.FindGameObjectWithTag("work_row_middle");
+      drop_cells = GameObject.FindGameObjectWithTag("drop_cells");
+      spawn_cells = GameObject.FindGameObjectWithTag("spawn_cells");
+
     }
 
     private void Start()
     {
 
-      //beeFree = GameObject.FindGameObjectWithTag("bee_free");
-      //beeRestricted = GameObject.FindGameObjectWithTag("bee_restricted");
-
-      //beeFree.GetComponent<BeeTap>().grabbed_on = false;
-      //beeRestricted.GetComponent<BeeTap>().grabbed_on = false;
-      //Debug.Log("free and restrictured set to GRABBED FALSE");
+      // find conditions
+      exitappscript = FindObjectOfType<Exit_app_script>();
+      ie_cond = exitappscript.ie_condition;
+      Debug.Log("BeeTap.cs exit app ie_condition = " + ie_cond);
 
     }
 
     // updates once per frame - keeping players within the game field (specifically the upper and lower bounds)
     void Update()
     {
-        // if the player is going past the top edge, move them back down
-        if(transform.position.y >= 4.9f)
-        {
-          transform.position = new Vector3(transform.position.x, 4.9f, 0);
-        }
 
-        // if player is going past bottom edge, move them back up
-        if(transform.position.y <= -4.9f)
-        {
-          transform.position = new Vector3(transform.position.x, -4.9f, 0);
-        }
+      beeFree = GameObject.FindGameObjectWithTag("bee_free");
+      beeRestrict = GameObject.FindGameObjectWithTag("bee_restricted");
 
+      checkBoundaries();
     }
 
     private void OnEnable()
@@ -96,75 +101,34 @@ public class BeeTap : MonoBehaviour
 		    }
     }
 
-    // is this not doing anything for us?
-  //  private void OnTriggerEnter2D(Collider2D collider)
-  //  {
-  //      if (collider.tag.Equals("pellet"))
-  //      {
-  //          player_coll = collider;
-  //          contact_on = true;
-            //Debug.Log(" touched pellet ");
-  //      }
-  //  }
-
-    // is this not doing anything for us?
-    //private void OnTriggerExit2D(Collider2D collider)
-    //{
-    //    if (collider.tag.Equals("pellet"))
-    //    {
-    //        player_coll = collider;
-    //        contact_on = false;
-    //    }
-    //}
-
-    //this happens when the pellet is tapped?
+    //this happens when the player is tapped
     private void tappedHandler2(object sender, EventArgs eventArgs)
     {
-        //Debug.Log("PELLET WAS TAPPED");
+    }
 
-        // if the player is in contact with the pellet
-        //if (contact_on)
-      //  {
-            // if they are not holding anything and there is a pellet in the cell
-          //  if (!grabbed_on && player_coll.GetComponent<PelletScript>().pellet_in_workCell) // && !pellet_in_workCell)
-          //  {
+    private void checkBoundaries()
+    {
+        // create barriers for left and right of work cells
+        // let the player enter the cell a little (0.8f) so they can be in touch with the pellet to grab it
+        float barrier_right = work_row.transform.GetChild(0).position.x + 0.8f;
+        float barrier_left = work_row.transform.GetChild(0).position.x - 0.8f;
 
-              //  dropTapCounter++;
-                // if they've tapped three times
-                //if (dropTapCounter == 3)
-                //{
-                    // should this be a picked up tag?
-                  //  player_coll.GetComponent<PelletScript>().saveToBuffer("GR_SPAWN");
-                    //Debug.Log(player_coll.gameObject.GetComponent<PelletScript>().player_coll.gameObject.tag);
-                  //  grabbed_on = true;
-                  //  Debug.Log("Grabbed on " + grabbed_on);
+        // if ie_condition = 1, block restricted player and allow free player to pass.
+        if (ie_cond == 1) {
+           // if the restricted player hits the boundary, don't allow them to pass.
+           if (GameObject.Find("player_blue").transform.position.x < barrier_right) {
+                  GameObject.Find("player_blue").transform.position = new Vector3(barrier_right, GameObject.Find("player_blue").transform.position.y, GameObject.Find("player_blue").transform.position.z);
+            }
+        }
 
-                    // ?
-                    //player_coll.transform.SetParent(transform);
-
-                    //  disable pellet collider
-                  //  player_coll.GetComponent<Collider2D>().enabled = false;
-                  //  player_coll.GetComponent<Rigidbody2D>().isKinematic = true;
-
-                    // ?
-                //    player_coll.transform.position = transform.position;
-
-                    // ? Put the pellet on their back?
-              //      GetComponent<SpriteRenderer>().color = player_coll.GetComponent<SpriteRenderer>().color;
-
-                    // reset the counter for the next pellet
-            //        dropTapCounter = 0;
-
-          //      }
-
-          //  }
-
-          //  else if (player_coll.GetComponent<PelletScript>().pellet_in_workCell && transform.tag.Equals("bee_free"))
-          //  {
-                //maybe do something
-          //  }
-
-        //}
+        // if ie_condition = 2, block free player and allow restricted player to pass.
+        if (ie_cond == 2) {
+           // if the restricted player hits the boundary, don't allow them to pass.
+           if (GameObject.Find("player_green").transform.position.x > barrier_left) {
+                  GameObject.Find("player_green").transform.position = new Vector3(barrier_left, GameObject.Find("player_green").transform.position.y, GameObject.Find("player_green").transform.position.z);
+            }
+        }
 
     }
+
 }

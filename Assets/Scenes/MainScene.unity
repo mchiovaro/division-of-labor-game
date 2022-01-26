@@ -639,7 +639,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &265935029
 MonoBehaviour:
@@ -735,6 +735,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grabbed_on: 0
+  FROM_LEFT: -1
+  FROM_RIGHT: 1
+  from_where_restrict: 0
+  from_where_free: 0
 --- !u!114 &265935033
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1304,9 +1308,12 @@ MonoBehaviour:
     type: 3}
   beeFree: {fileID: 0}
   beeRestrict: {fileID: 0}
-  ParticipantNumber: 4
+  ParticipantNumber: 1
   RA_initials: Billy Bob
-  current_trial: 0
+  td_condition: 
+  ie_condition: 0
+  com_condition: 0
+  size_condition: 0
   current_frame: 0
   pellets_dropped: 0
   ui_text: {fileID: 1521845867}
@@ -2460,7 +2467,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &957158076
 MonoBehaviour:
@@ -2475,6 +2482,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grabbed_on: 0
+  FROM_LEFT: -1
+  FROM_RIGHT: 1
+  from_where_restrict: 0
+  from_where_free: 0
 --- !u!114 &957158077
 MonoBehaviour:
   m_ObjectHideFlags: 0

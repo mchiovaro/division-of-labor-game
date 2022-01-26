@@ -13,17 +13,15 @@ public class Exit_app_script : MonoBehaviour
     public int ParticipantNumber; // pulls from the excel sheet with conditions
     public string RA_initials;
 
-    // trial counter
-    public int current_trial = 0;
-
     // max number of pellets based on number of cells available
     private const int MAX_PELLETS = 20;
 
     // initialize conditions list
     public List<int> td_condition = new List<int>(7);
-    public List<int> ie_condition = new List<int>(1);
-    public List<int> com_condition = new List<int>(1);
-    public List<int> size_condition = new List<int>(1);
+    //public List<int> ie_condition = new List<int>(1);
+    public int ie_condition;
+    public int com_condition;
+    public int size_condition;
 
     // ending experiment condition
     private const int CONDITION_EXPERIMENT_OVER = 0;
@@ -144,6 +142,7 @@ public class Exit_app_script : MonoBehaviour
     // Update() is called once per frame
     void Update()
     {
+
         //float timestamp = Time.time - timeIni; // brings timestamp back to zero before each trial
         float timestamp = Time.time; // keeping the time relative to the start of the game, not reseting at each trial
 
@@ -196,7 +195,7 @@ public class Exit_app_script : MonoBehaviour
 
         }
 
-        // what's this doing?
+        // if this isn't the last round
         else if (!(current_cond == td_condition.Count - 1))
         {
             // if space bar is pressed between trials
@@ -213,8 +212,6 @@ public class Exit_app_script : MonoBehaviour
                 // run the game
                 running_ = true;
 
-                // start of game time
-                //timeIni = Time.time; // time in seconds since game was launched
             }
 
         }
@@ -242,7 +239,7 @@ public class Exit_app_script : MonoBehaviour
 
             // create the string with the participant position data
             string next_line = System.DateTime.Now + "," + ParticipantNumber + ","
-                    + RA_initials + "," + current_trial + ","
+                    + RA_initials + "," + current_cond + ","
                     + td_condition[current_cond] + "," + Time.time + ","
                     + beeFree.transform.position.x + ","
                     + beeFree.transform.position.y + ","
@@ -266,6 +263,7 @@ public class Exit_app_script : MonoBehaviour
         //   pellets_dropped++;
         Debug.Log("pellet count = " + dropped_pellets.Count);
 
+        // if there are no more pellets
         if (dropped_pellets.Count == MAX_PELLETS)
         {
             running_ = false;
@@ -275,20 +273,21 @@ public class Exit_app_script : MonoBehaviour
                 saveToDisk();
             }
 
-            //RESETS EVERYTHING
+            // clear pellet data
             dropped_pellets.Clear();
 
-
-
+            // find and destroy all pellets
             GameObject[] allPellets = GameObject.FindGameObjectsWithTag("pellet");
             foreach (GameObject ggoo in allPellets) Destroy(ggoo);
 
+            // don't let the players move anymore
             beeFree.GetComponent<TouchScript.Behaviors.Transformer>().enabled = false;
             beeRestrict.GetComponent<TouchScript.Behaviors.Transformer>().enabled = false;
 
+            // reset positions of players
             beeFree.transform.position = new Vector3(-3.25f, 0, 0);
             beeRestrict.transform.position = new Vector3(3.25f, 0, 0);
-
+            // reset variables
             current_spawn = 0;
             next_spawn = 0;
             current_frame = 0;
@@ -309,17 +308,21 @@ public class Exit_app_script : MonoBehaviour
                 spawn_cells.transform.GetChild(ii).GetComponent<SpawnCellScript>().contact_on = false;
             }
 
-            // practice round runs only once
-            // if more attempts are needed, for now they just restart game
+            // if this was the practice round, set to false (if more attempts are needed, for now they just restart game)
             if (practice_mode){
                 practice_mode = false;
             }
+            // add one to the condition counter
             else {
                 current_cond++;
-                current_trial++;
             }
 
-            checkCondition();
+            // was used for checking the input condition, but this needs to be removed I think
+            // should just check for:
+            // ie - making walls go up
+            // td - making button pressing change (pellet scripts?)
+            // com - making buttons appear?
+            //checkCondition();
 
             // clear pellet data
             for (int ii = 0; ii < MAX_PELLETS; ii++)
@@ -336,17 +339,11 @@ public class Exit_app_script : MonoBehaviour
     {
         switch (td_condition[current_cond])
         {
-
-
             // constant rate condition
             case CONDITION_CONSTANT_RATE:
 
                 ui_image.enabled = true;
                 ui_text.text = "Round Finished. \n Ready for next round?";
-
-                // keeps spawn rate at 5.0f
-                //for (int ii = 0; ii < MAX_PELLETS; ii++)
-                //    spawn_rate[ii] = 5.0f;
 
                 break;
 
@@ -381,7 +378,7 @@ public class Exit_app_script : MonoBehaviour
         } */
 
         // if this is the first real round
-        if(current_cond ==0 && !practice_mode)
+        if(current_cond == 0 && !practice_mode)
         {
             string header_string = "Date,Participant,RA,Trial,Condition,Timestamp";
 
@@ -418,7 +415,7 @@ public class Exit_app_script : MonoBehaviour
         // save data
         for (int ii = 0; ii < data_beeFree.allPositions.Count; ii++)
         {
-            string next_line = System.DateTime.Now + "," + ParticipantNumber + "," + RA_initials + "," + current_trial + "," + td_condition[current_cond]
+            string next_line = System.DateTime.Now + "," + ParticipantNumber + "," + RA_initials + "," + current_cond + "," + td_condition[current_cond]
                 + "," + data_beeFree.allTimeStamps[ii];
 
             /* This loop is the reason for the duplicate time stamps (I think).
@@ -461,7 +458,7 @@ public class Exit_app_script : MonoBehaviour
 
             // parse apart conditions from file going down column 1
             int.TryParse(col[ii], out temp_td);
-            Debug.Log("td_condition = " + temp_td);
+            //Debug.Log("td_condition = " + temp_td);
 
             // add the condition to a string
             td_condition.Add(temp_td);
@@ -478,36 +475,30 @@ public class Exit_app_script : MonoBehaviour
         // create temp variable to hold the condition
         int temp_ie;
 
-        // parse apart conditions from file going down column 1
+        // parse apart condition from file column 1
         int.TryParse(col[1], out temp_ie);
-        Debug.Log("ie_condition = " + temp_ie);
-
-        // add the condition to a string
-        ie_condition.Add(temp_ie);
+        ie_condition = temp_ie;
+        Debug.Log("ie_condition = " + ie_condition);
 
     // com_condition
 
         // create temp variable to hold the condition
         int temp_com;
 
-        // parse apart conditions from file going down column 1
+        // parse apart condition from file column 8
         int.TryParse(col[8], out temp_com);
-        Debug.Log("com_condition = " + temp_com);
-
-        // add the condition to a string
-        com_condition.Add(temp_com);
+        com_condition = temp_com;
+        //Debug.Log("com_condition = " + com_condition);
 
     // size_condition: number of participants
 
         // create temp variable to hold the condition
         int temp_size;
 
-        // parse apart conditions from file going down column 1
+        // parse apart condition from file column 9
         int.TryParse(col[9], out temp_size);
-        Debug.Log("size_condition = " + temp_size);
-
-        // add the condition to a string
-        com_condition.Add(temp_size);
+        size_condition = temp_size;
+        //Debug.Log("size_condition = " + size_condition);
 
     }
 

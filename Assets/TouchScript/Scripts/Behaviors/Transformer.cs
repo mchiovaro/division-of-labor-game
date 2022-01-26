@@ -171,29 +171,44 @@ namespace TouchScript.Behaviors
 
         #region Unity methods
 
+        // add reference to Exit_app_script to grab ie_condition
+        Exit_app_script exitappscript;
+
         // define our objects
         GameObject work_row, drop_cells, spawn_cells;
         const int BEE_FREE = 1;
         const int BEE_RESTRICTED = 0;
 
+        // initialize direction indicators
         public int FROM_LEFT = -1;
         public int FROM_RIGHT = 1;
 
         public int from_where = 0;
 
+        // read in size_condition from Exit_app_script.cs
+        private int ie_cond;
+
         private int player_type; //0 = restricted, 1 = free
         private float SPRITE_WIDTH;
+
         private void Start()
         {
+          //Debug.Log("game object tag = " + gameObject.tag);
+
+          //bee_restrict = transform.Find("player_blue").gameObject;
+          //bee_free = transform.Find("player_green").gameObject;
+
+          // find conditions
+          exitappscript = FindObjectOfType<Exit_app_script>();
+          ie_cond = exitappscript.ie_condition;
+          //Debug.Log("Transformer.cs exit app ie_condition = " + ie_cond);
+
             // find the cells
             work_row = GameObject.FindGameObjectWithTag("work_row_middle");
             //work_cell_top = GameObject.FindGameObjectWithTag("work_cell_top");
             //work_cell_bottom = GameObject.FindGameObjectWithTag("work_cell_bottom");
             drop_cells = GameObject.FindGameObjectWithTag("drop_cells");
             spawn_cells = GameObject.FindGameObjectWithTag("spawn_cells");
-            // tag the player types
-            if (gameObject.tag.Equals("bee_free")) { player_type = BEE_FREE; }
-            if (gameObject.tag.Equals("bee_restricted")) { player_type = BEE_RESTRICTED; }
 
             // set the starting sides they're coming from
             if (transform.position.x < 0)
@@ -204,9 +219,9 @@ namespace TouchScript.Behaviors
             {
                 from_where = FROM_RIGHT;
             }
+
             SPRITE_WIDTH = GetComponent<SpriteRenderer>().sprite.bounds.size.x;
 
-            //    Debug.Log(" sprite width = " + GetComponent<SpriteRenderer>().sprite.bounds.size.x);
         }
 
         private void Awake()
@@ -281,6 +296,7 @@ namespace TouchScript.Behaviors
 
         private void update()
         {
+
             if (state == TransformerState.Idle) return;
 
             if (!enableSmoothing) return;
@@ -412,34 +428,49 @@ namespace TouchScript.Behaviors
             update();
         }
 
+        // set up standard boundaries for playing field (ie_condition boundaries set in BeeTap.cs)
         private void checkBoundaries()
         {
+            // create target placeholder
             Vector3 targetPosition2 = targetPosition;
 
-            //108 is the width of square, 104 the width of disk.
-            // create barriers for spawn/work/drop cells
-            // let the player enter the cell a little (0.8f) so they can be in touch with the pellet to grab it
-            float barrier_right = work_row.transform.GetChild(0).position.x + 0.8f * (SPRITE_WIDTH / 2);
-            float barrier_left = work_row.transform.GetChild(0).position.x - 0.8f * (SPRITE_WIDTH / 2);
-            float barrier_top = work_row.transform.GetChild(0).position.y + 0.8f * (SPRITE_WIDTH / 2);
-            float barrier_bottom = work_row.transform.GetChild(7).position.y - 0.8f * (SPRITE_WIDTH / 2);
-            float barrier_drop = drop_cells.transform.GetChild(0).position.x + 0.8f * (SPRITE_WIDTH / 2);
-            float barrier_spawn = spawn_cells.transform.GetChild(0).position.x - 0.8f * (SPRITE_WIDTH / 2);
+            // create barriers (let the player enter the cell a little (0.8f) so they can be in touch with the pellet to grab it)
+            float barrier_right = work_row.transform.GetChild(0).position.x + 0.8f;
+            float barrier_left = work_row.transform.GetChild(0).position.x - 0.8f;
+
+            // these are the top and bottom barrier of the work cells (a little smaller passage because they don't need to intercept the pellets in this area)
+            float barrier_top = work_row.transform.GetChild(0).position.y + 0.8f;
+            float barrier_bottom = work_row.transform.GetChild(7).position.y - 0.8f;
+
+            // drop and spawn barriers
+            float barrier_drop = drop_cells.transform.GetChild(0).position.x + 0.8f + 0.5f;
+            float barrier_spawn = spawn_cells.transform.GetChild(0).position.x - 0.8f;
+
+            // field barriers (y coord comes from middle so +/1 0.3 means a 0.2 overlap, the same as left/right)
+            float field_top = drop_cells.transform.GetChild(0).position.y + 0.3f;
+            float field_bottom = drop_cells.transform.GetChild(9).position.y - 0.3f;
 
             // SPAWN and DROP: don't allow any passing
-            if (targetPosition.x < barrier_drop + SPRITE_WIDTH) targetPosition2.x = barrier_drop + SPRITE_WIDTH;
-            if (targetPosition.x > barrier_spawn - SPRITE_WIDTH / 2) targetPosition2.x = barrier_spawn - SPRITE_WIDTH / 2;
+            if (targetPosition.x < barrier_drop) targetPosition2.x = barrier_drop;
+            if (targetPosition.x > barrier_spawn) targetPosition2.x = barrier_spawn;
+
+            // TOP and BOTTOM: don't allow any passing
+            if (targetPosition.y < field_bottom) targetPosition2.y = field_bottom;
+            if (targetPosition.y > field_top) targetPosition2.y = field_top;
 
             //WORK ROW: if they are coming from the right and they are within the two barriers, block them                                   // add a little room so they can overlap
-            if (from_where == FROM_RIGHT && targetPosition.x < barrier_right + SPRITE_WIDTH / 2 && targetPosition.y < barrier_top + SPRITE_WIDTH / 4 && targetPosition.y > barrier_bottom - SPRITE_WIDTH / 4)
+            if (from_where == FROM_RIGHT && targetPosition.x < barrier_right && targetPosition.y < barrier_top && targetPosition.y > barrier_bottom)
             {
-                targetPosition2.x = barrier_right + SPRITE_WIDTH / 2;
+                //Debug.Log("TRIGGERING FROM RIGHT");
+                targetPosition2.x = barrier_right;
             }
             //WORK ROW: if they are coming from the left and they are within the two barriers, block them                                     // add a little room so they can overlap
-            else if (from_where == FROM_LEFT && targetPosition.x > barrier_left - SPRITE_WIDTH / 2 && targetPosition.y < barrier_top + SPRITE_WIDTH / 4 && targetPosition.y > barrier_bottom - SPRITE_WIDTH / 4)
+            else if (from_where == FROM_LEFT && targetPosition.x > barrier_left && targetPosition.y < barrier_top && targetPosition.y > barrier_bottom)
             {
-                targetPosition2.x = barrier_left - SPRITE_WIDTH / 2;
+                //Debug.Log("TRIGGERING FROM LEFT");
+                targetPosition2.x = barrier_left;
             }
+
 
             cachedTransform.position = targetPosition2;
 
