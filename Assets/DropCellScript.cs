@@ -64,7 +64,7 @@ public class DropCellScript : MonoBehaviour
 
                 dropTapCounter++;
 
-                if(dropTapCounter == 3)
+                if(dropTapCounter == 2)
                 {
                     float offset = 5.4f / 10;
 

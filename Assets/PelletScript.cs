@@ -28,10 +28,13 @@ public class PelletScript : MonoBehaviour
     public bool pellet_in_spawnCell = false;
     public bool worked = false;
     public Collider2D player_coll;
+    private int grabber;
   //  public bool free_grabbed_on = false;
   //  public bool restrict_grabbed_on = false;
 
     private GameObject beeFree, beeRestricted;
+
+
 
     public Dictionary<string, bool> my_colliders = new Dictionary<string, bool>() {{"bee_free",false}, {"bee_restricted",false}};
 
@@ -51,9 +54,11 @@ public class PelletScript : MonoBehaviour
     // allows yellow disk to be scaled up
     private Transform yellow_disk;
 
-    // CONDITION: Change for bee beeFree
+    // CONDITION: Change for beeFree
     //correct tapping sequence on inner shapes (can add 3 more, 1,2,3 again)
     private int[] CORRECT_SEQUENCE = {1, 2, 3};
+    private int[] CORRECT_SEQUENCE_2 = {3, 2, 1};
+    private int[] CORRECT_SEQUENCE_3 = {1, 2, 3};
 
     // variable for recording the players current input sequence
     private int current_seq = 0;
@@ -62,12 +67,22 @@ public class PelletScript : MonoBehaviour
     private List<GameObject> seqButtonsGO = new List<GameObject>();
     public List<int> SeqButtons = new List<int>();
 
+    // add reference to Exit_app_script to grab td and ie conditions
+    Exit_app_script exitappscript;
+    Exit_app_script exitappscript2;
+
+    // read in td_condition from Exit_app_script.cs
+    private List<int> td_cond = new List<int>();
+    private int round_num;
+
+    // need a round counter
+
+
     private void Awake()
     {
 
         beeFree = GameObject.FindGameObjectWithTag("bee_free");
         beeRestricted = GameObject.FindGameObjectWithTag("bee_restricted");
-
         //audioData = GetComponent<AudioSource>();
 
         //
@@ -97,8 +112,16 @@ public class PelletScript : MonoBehaviour
     private void Start()
     {
 
-    }
+      // get td_condition from Exit_app_script
+      exitappscript = Camera.main.GetComponent<Exit_app_script>();
+      td_cond = exitappscript.td_condition;
 
+      // get the round number from Exit_app_script
+      round_num = Camera.main.GetComponent<Exit_app_script>().round_number;
+      Debug.Log("round_num from PelletScript = " + round_num);
+
+    }
+    
     private void OnEnable()
     {
         GetComponent<TapGesture>().Tapped += tappedHandler2;
@@ -112,42 +135,11 @@ public class PelletScript : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collider_)
     {
-/*      // if the collided object is bee free, set contact true and give a debug message
-      if (collider_.tag.Equals("bee_free")){
-        my_colliders["bee_free"] = true;
-        free_contact_on = true;
-        Debug.Log(collider_.gameObject.tag + " contact on");
-      }
-
-      // if the collided object is bee free, set contact true and give a debug message
-      if (collider_.tag.Equals("bee_restricted")){
-        my_colliders["bee_restricted"] = true;
-        restrict_contact_on = true;
-        Debug.Log(collider_.gameObject.tag + " contact on");
-      }
-*/    }
+    }
 
     private void OnCollisionExit2D(Collision2D collider_)
     {
-/*      // if the collider object that moved away was bee free, set contact false and give debug message
-      if (collider_.tag.Equals("bee_free"))
-      {
-          my_colliders["bee_free"] = false;
-          free_contact_on = false;
-          Debug.Log(collider_.gameObject.tag + " contact off");
-      }
-
-      // if the collider object that moved away was bee restricted, set contact false and give debug message
-      if (collider_.tag.Equals("bee_restricted"))
-      {
-        my_colliders["bee_restricted"] = false;
-        restrict_contact_on = false;
-        Debug.Log(collider_.gameObject.tag + " contact off");
-      }
-      //make make their collider be the pellet they are contacting
-      if (!my_colliders["bee_free"] && my_colliders["bee_restricted"]) player_coll = beeRestricted.GetComponent<Collider2D>();
-      if (my_colliders["bee_free"] && !my_colliders["bee_restricted"]) player_coll = beeFree.GetComponent<Collider2D>();
-*/    }
+    }
 
     // Senses the contact and logs it
     private void OnTriggerEnter2D(Collider2D collider_)
@@ -186,12 +178,6 @@ public class PelletScript : MonoBehaviour
             Debug.Log("coming from right");
         }
       }
-
-      //make make their collider be the pellet they are contacting
-      //if (!my_colliders["bee_free"] && my_colliders["bee_restricted"]) player_coll = beeRestricted.GetComponent<Collider2D>();
-      //if (my_colliders["bee_free"] && !my_colliders["bee_restricted"]) player_coll = beeFree.GetComponent<Collider2D>();
-      //Debug.Log("player_coll = " + player_coll);
-
     }
 
     // when bee moves away
@@ -218,6 +204,7 @@ public class PelletScript : MonoBehaviour
     // when pellet is tapped
     private void tappedHandler2(object sender, EventArgs eventArgs)
     {
+
       // if bee free is in contact and not holding a pellet
       if (free_contact_on == true && beeFree.GetComponent<BeeTap>().grabbed_on == false && advanced_pellet == false)
       {
@@ -351,18 +338,20 @@ public class PelletScript : MonoBehaviour
     // creates the sequence of tapped shapes, tapped_shape is the button tag
     public void addToSequence(int tapped_shape, SpriteRenderer sp)
     {
+
         //audioData.clip = aClips[tapped_shape - 1];
         //audioData.Play();
-        // if bee_free is touching the pellet and not grabbing anything //&& beeFree.GetComponent<BeeTap>().grabbed_on == false
-        if(free_contact_on == true && restrict_contact_on == false){
 
-          Debug.Log("addToSequence FREE CONTACT ON");
-          //Debug.Log("my_colliders[bee_free] = " + my_colliders["bee_free"]);
-          //Debug.Log("my_colliders[bee_restricted] = " + my_colliders["bee_restricted"]);
-          //Debug.Log("tapped " + tapped_shape);
+        // if bee_free is touching the pellet and not grabbing anything
+        if((free_contact_on == true && restrict_contact_on == false) || (restrict_contact_on == true && free_contact_on == false)){
+
+          // identify who is trying to grab the pellet
+          if(free_contact_on == true && restrict_contact_on == false) grabber = 1;
+          if(restrict_contact_on == true && free_contact_on == false) grabber = 2;
+
+          Debug.Log("CONTACT ON");
           SeqButtons.RemoveAt(0);
           SeqButtons.Add(tapped_shape);
-
           bool seqCorresponds = true;
 
           // if they haven't done the full sequence yet and they are approaching from the left
@@ -395,13 +384,31 @@ public class PelletScript : MonoBehaviour
               // destroy the inner buttons
               GameObject.Destroy(seqButtonsGO[0].transform.parent.gameObject);
 
-              // note that free bee grabbed on to the advanced pellet
-              beeFree.GetComponent<BeeTap>().grabbed_on = true;
+              // if it's bee free doing the work
+              if(grabber == 1){
 
-              // set bee free as parent and put pellet on it's back
-              transform.SetParent(beeFree.transform);
-              transform.position = beeFree.transform.position;
-              beeFree.GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
+                // note that free bee grabbed on to the advanced pellet
+                beeFree.GetComponent<BeeTap>().grabbed_on = true;
+
+                // set bee free as parent and put pellet on it's back
+                transform.SetParent(beeFree.transform);
+                transform.position = beeFree.transform.position;
+                beeFree.GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
+
+              }
+
+              // if it's bee restrict doing the work
+              if(grabber == 2){
+
+                // note that free bee grabbed on to the advanced pellet
+                beeRestricted.GetComponent<BeeTap>().grabbed_on = true;
+
+                // set bee free as parent and put pellet on it's back
+                transform.SetParent(beeRestricted.transform);
+                transform.position = beeRestricted.transform.position;
+                beeRestricted.GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
+
+              }
 
               //  disable pellet collider
               GetComponent<Collider2D>().enabled = false;
@@ -409,65 +416,6 @@ public class PelletScript : MonoBehaviour
           }
 
         }
-
-        // if bee_restricted is touching the pellet
-        if(restrict_contact_on == true && free_contact_on == false){
-
-          Debug.Log("addToSequence RESTRICT CONTACT ON");
-          //Debug.Log("from_where = " + from_where);
-          //Debug.Log("bee restricted is touching");
-          //Debug.Log("tapped " + tapped_shape);
-          SeqButtons.RemoveAt(0);
-          SeqButtons.Add(tapped_shape);
-
-          bool seqCorresponds = true;
-
-          // if they haven't done the full sequence yet and they are approaching from the left
-          if(current_seq < CORRECT_SEQUENCE.Length && from == left)
-          {
-              // if their taps were in the right order but they aren't done yet
-              if (tapped_shape == CORRECT_SEQUENCE[current_seq])
-              {
-                  current_seq++;
-                  // remove that button
-                  sp.enabled = false;
-              }
-
-              // if they messed up the sequence
-              else
-              {
-                  current_seq = 0;
-                  seqCorresponds = false;
-                  // put all buttons back
-                  foreach (GameObject ggoo in seqButtonsGO) ggoo.GetComponent<SpriteRenderer>().enabled = true;
-              }
-          }
-
-          // if the player does the right sequence
-          if (seqCorresponds && current_seq == CORRECT_SEQUENCE.Length)
-          {
-              // record that bee restricted worked a pellet at that moment
-              //saveToBuffer("GR_WORK");
-
-              // destroy the inner buttons
-              GameObject.Destroy(seqButtonsGO[0].transform.parent.gameObject);
-
-              // note that restricted bee grabbed on to the advanced pellet
-              beeRestricted.GetComponent<BeeTap>().grabbed_on = true;
-
-              // set bee restricted as parent and put pellet on it's back
-              transform.SetParent(beeRestricted.transform);
-              transform.position = beeRestricted.transform.position;
-              beeRestricted.GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
-
-              //  disable pellet collider
-              GetComponent<Collider2D>().enabled = false;
-              GetComponent<Rigidbody2D>().isKinematic = true;
-          }
-
-        }
-
-
 
     }
 
@@ -477,7 +425,7 @@ public class PelletScript : MonoBehaviour
 
         // save the pellets position and frame
         e_a_s.pellData[pelletID].pelletEvent.Add("X_" + transform.position.x + "_Y_" + transform.position.y + "_" + stringus);
-        e_a_s.pellData[pelletID].frameNum.Add(e_a_s.current_frame - 1);
+        e_a_s.pellData[pelletID].frameNum.Add(e_a_s.round_number - 1);
 
     }
 }

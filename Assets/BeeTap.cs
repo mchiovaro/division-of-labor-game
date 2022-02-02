@@ -28,7 +28,7 @@ public class BeeTap : MonoBehaviour
     // define our objects
     GameObject work_row, drop_cells, spawn_cells, beeFree, beeRestrict;
 
-    // read in size_condition from Exit_app_script.cs
+    // read in ie_condition from Exit_app_script.cs
     private int ie_cond;
 
     void Awake ()
@@ -50,7 +50,6 @@ public class BeeTap : MonoBehaviour
       // find conditions
       exitappscript = FindObjectOfType<Exit_app_script>();
       ie_cond = exitappscript.ie_condition;
-      Debug.Log("BeeTap.cs exit app ie_condition = " + ie_cond);
 
     }
 

@@ -14,7 +14,7 @@ public class Exit_app_script : MonoBehaviour
     public string RA_initials;
 
     // max number of pellets based on number of cells available
-    private const int MAX_PELLETS = 20;
+    private const int MAX_PELLETS = 1;
 
     // initialize conditions list
     public List<int> td_condition = new List<int>(7);
@@ -46,9 +46,10 @@ public class Exit_app_script : MonoBehaviour
     //private const int CONDITION_RANDOM_RATE = 3;
 
     // initial conditions
-    // current_cond is really just another trial counter, but then pulls from the list of conditions
-    private int current_cond = 0;
-    private bool practice_mode = false; // true to include the practice trial // FIX
+    // round_number is really just another trial counter, but then pulls from the list of conditions
+    public int round_number = 0;
+    public int round_nummy = 123;
+    private bool practice_mode = true; // true to include the practice trial // FIX
 
     // allows for the rate of spawn to be changed in condition checkCondition()
     private List<float> spawn_rate = new List<float>(new float[MAX_PELLETS]);
@@ -60,7 +61,7 @@ public class Exit_app_script : MonoBehaviour
     private bool running_ = false;
     private float next_spawn = 0.0f;
     private int current_spawn = 0;
-    public int current_frame = 0;
+    //public int current_frame = 0;
 
     // pellet counter
     public int pellets_dropped = 0;
@@ -149,7 +150,7 @@ public class Exit_app_script : MonoBehaviour
         // if we are currently in a trial
         if (running_)
         {
-            current_frame++;
+            //current_frame++;
 
             // allow for escape quitting
             if (Input.GetKey("escape")) Application.Quit();
@@ -195,8 +196,8 @@ public class Exit_app_script : MonoBehaviour
 
         }
 
-        // if this isn't the last round
-        else if (!(current_cond == td_condition.Count - 1))
+        // if this isn't the last round (if this isn't trial 6??)
+        else if (!(round_number == td_condition.Count - 1))
         {
             // if space bar is pressed between trials
             if (Input.GetKey("space"))
@@ -239,8 +240,8 @@ public class Exit_app_script : MonoBehaviour
 
             // create the string with the participant position data
             string next_line = System.DateTime.Now + "," + ParticipantNumber + ","
-                    + RA_initials + "," + current_cond + ","
-                    + td_condition[current_cond] + "," + Time.time + ","
+                    + RA_initials + "," + round_number + ","
+                    + td_condition[round_number] + "," + Time.time + ","
                     + beeFree.transform.position.x + ","
                     + beeFree.transform.position.y + ","
                     + beeRestrict.transform.position.x + ","
@@ -267,6 +268,9 @@ public class Exit_app_script : MonoBehaviour
         if (dropped_pellets.Count == MAX_PELLETS)
         {
             running_ = false;
+            round_number++;
+            Debug.Log("round_number = " + round_number);
+            Debug.Log("TESTING");
 
             // save pellet data if it's not from practice
             if (!practice_mode){
@@ -290,7 +294,7 @@ public class Exit_app_script : MonoBehaviour
             // reset variables
             current_spawn = 0;
             next_spawn = 0;
-            current_frame = 0;
+
 
             for (int ii = 0; ii < drop_cells.transform.childCount; ii++)
             {
@@ -312,17 +316,12 @@ public class Exit_app_script : MonoBehaviour
             if (practice_mode){
                 practice_mode = false;
             }
-            // add one to the condition counter
-            else {
-                current_cond++;
-            }
 
-            // was used for checking the input condition, but this needs to be removed I think
             // should just check for:
-            // ie - making walls go up
+            // ie - making walls go up (DONE)
             // td - making button pressing change (pellet scripts?)
             // com - making buttons appear?
-            //checkCondition();
+            checkCondition();
 
             // clear pellet data
             for (int ii = 0; ii < MAX_PELLETS; ii++)
@@ -337,17 +336,31 @@ public class Exit_app_script : MonoBehaviour
 
     void checkCondition()
     {
-        switch (td_condition[current_cond])
+        switch (td_condition[round_number])
         {
-            // constant rate condition
-            case CONDITION_CONSTANT_RATE:
+          // if we aren't done with the trials, ask if they are ready for the next one
+            case FREE_HARD:
 
                 ui_image.enabled = true;
-                ui_text.text = "Round Finished. \n Ready for next round?";
+                ui_text.text = "Round Finished. \n Red player: Condition " + FREE_HARD.ToString() + ".\n Ready for next round?";
 
                 break;
 
-            // end screen
+            case RESTRICT_HARD:
+
+                ui_image.enabled = true;
+                ui_text.text = "Round Finished. \n Red player: Condition " + RESTRICT_HARD.ToString() + ".\n Ready for next round?";
+
+                break;
+
+            case BOTH_HARD:
+
+                ui_image.enabled = true;
+                ui_text.text = "Round Finished. \n Red player: Condition " + BOTH_HARD.ToString() + ".\n Ready for next round?";
+
+                break;
+
+          // end screen when done with trials
             case CONDITION_EXPERIMENT_OVER:
 
                 ui_image.enabled = true;
@@ -370,15 +383,8 @@ public class Exit_app_script : MonoBehaviour
 
         StreamWriter writer = new StreamWriter(path, true);
 
-
-        /* if(current_cond ==0 && practice_mode)
-        {
-            string header_string = "Date,Participant,RA,Trial,Condition,Timestamp,BeeOldX,BeeOldY,BeeYoungX,BeeYoungY";
-            writer.WriteLine(header_string);
-        } */
-
         // if this is the first real round
-        if(current_cond == 0 && !practice_mode)
+        if(round_number == 0 && !practice_mode)
         {
             string header_string = "Date,Participant,RA,Trial,Condition,Timestamp";
 
@@ -415,7 +421,7 @@ public class Exit_app_script : MonoBehaviour
         // save data
         for (int ii = 0; ii < data_beeFree.allPositions.Count; ii++)
         {
-            string next_line = System.DateTime.Now + "," + ParticipantNumber + "," + RA_initials + "," + current_cond + "," + td_condition[current_cond]
+            string next_line = System.DateTime.Now + "," + ParticipantNumber + "," + RA_initials + "," + round_number + "," + td_condition[round_number]
                 + "," + data_beeFree.allTimeStamps[ii];
 
             /* This loop is the reason for the duplicate time stamps (I think).
