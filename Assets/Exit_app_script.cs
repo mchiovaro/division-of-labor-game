@@ -14,7 +14,7 @@ public class Exit_app_script : MonoBehaviour
     public string RA_initials;
 
     // max number of pellets based on number of cells available
-    private const int MAX_PELLETS = 1;
+    private const int MAX_PELLETS = 20;
 
     // initialize conditions list
     public List<int> td_condition = new List<int>(7);
@@ -40,16 +40,9 @@ public class Exit_app_script : MonoBehaviour
     public const int TALK_BUTTONS = 2;
     public const int TALK_FREE = 3;
 
-    // rates of incoming food pellets
-    private const int CONDITION_CONSTANT_RATE = 1;
-    //private const int CONDITION_INCREASING_RATE = 2;
-    //private const int CONDITION_RANDOM_RATE = 3;
-
     // initial conditions
-    // round_number is really just another trial counter, but then pulls from the list of conditions
     public int round_number = 0;
-    public int round_nummy = 123;
-    private bool practice_mode = true; // true to include the practice trial // FIX
+    private bool practice_mode = true; // true to include the practice trial
 
     // allows for the rate of spawn to be changed in condition checkCondition()
     private List<float> spawn_rate = new List<float>(new float[MAX_PELLETS]);
@@ -61,7 +54,6 @@ public class Exit_app_script : MonoBehaviour
     private bool running_ = false;
     private float next_spawn = 0.0f;
     private int current_spawn = 0;
-    //public int current_frame = 0;
 
     // pellet counter
     public int pellets_dropped = 0;
@@ -88,7 +80,7 @@ public class Exit_app_script : MonoBehaviour
 
     // variables for data structures
     public SaveData data_beeFree, data_beeRestrict;
-    private bool quitting = false;
+    //private bool quitting = false;
 
     // old time variable to reset time after each trial
     //private float timeIni = 0;
@@ -138,6 +130,11 @@ public class Exit_app_script : MonoBehaviour
         // setting up camera ratio of the field
         float ratio = 108 / ScToWRatio - Camera.main.orthographicSize + 108 / (2 * ScToWRatio);
 
+        // check to see what the communication condition is and create communication buttons if condition 2
+        if(com_condition == 1){
+          //Debug.Log("Com condition working");
+        }
+
     }
 
     // Update() is called once per frame
@@ -150,7 +147,6 @@ public class Exit_app_script : MonoBehaviour
         // if we are currently in a trial
         if (running_)
         {
-            //current_frame++;
 
             // allow for escape quitting
             if (Input.GetKey("escape")) Application.Quit();
@@ -185,6 +181,37 @@ public class Exit_app_script : MonoBehaviour
                     }
                 }
             }
+
+            if(com_condition == 1){
+
+              //Debug.Log("Com condition working");
+              //GameObject button = Instantiate(foodPrefab, spawn_cells.transform.GetChild(avail_spawn[rand_ini]).position, Quaternion.identity);
+
+/* THIS NEEDS TO GET MOVED INTO IT'S OWN SCRIPT OR FUNCTION - CHECK HOW TAPPED PELLETS ARE BEING HANDLED
+                      // set up saving location
+                      string filetitle =  "buttonlog-" + ParticipantNumber;
+                      string path = "Assets/Resources/Data/" + filetitle + ".csv";
+
+                      // create writer
+                      StreamWriter writer = new StreamWriter(path, true);
+
+                      // create the string when button is pressed logging time and participant position data
+                      string next_line = System.DateTime.Now + "," + round_number + ","
+                              + td_condition[round_number] + "," + Time.time + ","
+                              + beeFree.transform.position.x + ","
+                              + beeFree.transform.position.y + ","
+                              + beeRestrict.transform.position.x + ","
+                              + beeRestrict.transform.position.y;
+
+                      // write the line
+                      writer.WriteLine(next_line);
+
+                      // close the writer
+                      writer.Close();
+*/
+
+            }
+
 
             // grab timstamp for each player and add to allTimeStamps (x, y coord)
             data_beeFree.allTimeStamps.Add(timestamp);
@@ -221,6 +248,7 @@ public class Exit_app_script : MonoBehaviour
         {
             // allow for quitting with escape key
             if (Input.GetKey("escape")) Application.Quit();
+
         }
 
     }
@@ -455,7 +483,7 @@ public class Exit_app_script : MonoBehaviour
 
     // td_condition
 
-        // increase by 1 until we hit six
+        // increase by 1 until we hit six (FIX: make this 7, one for trial round)
         for (int ii = 2; ii < 8; ii++)
         {
 

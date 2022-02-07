@@ -13,8 +13,8 @@ using Random = UnityEngine.Random;
 /// <exclude />
 public class PelletScript : MonoBehaviour
 {
-    //AudioSource audioData;
-    //public  AudioClip [] aClips = new AudioClip [4];
+    AudioSource audioData;
+    public  AudioClip [] aClips = new AudioClip [4];
 
     //public GameObject pellet_holder;
 
@@ -28,13 +28,11 @@ public class PelletScript : MonoBehaviour
     public bool pellet_in_spawnCell = false;
     public bool worked = false;
     public Collider2D player_coll;
-    private int grabber;
-  //  public bool free_grabbed_on = false;
-  //  public bool restrict_grabbed_on = false;
+    // set grabber indicators for the different kinds of pellets
+    private int grabber_advanced;
+    private int grabber_base;
 
     private GameObject beeFree, beeRestricted;
-
-
 
     public Dictionary<string, bool> my_colliders = new Dictionary<string, bool>() {{"bee_free",false}, {"bee_restricted",false}};
 
@@ -56,9 +54,10 @@ public class PelletScript : MonoBehaviour
 
     // CONDITION: Change for beeFree
     //correct tapping sequence on inner shapes (can add 3 more, 1,2,3 again)
-    private int[] CORRECT_SEQUENCE = {1, 2, 3};
-    private int[] CORRECT_SEQUENCE_2 = {3, 2, 1};
-    private int[] CORRECT_SEQUENCE_3 = {1, 2, 3};
+    private int[] CORRECT_SEQUENCE; //= {1, 2, 3};
+    private int[] seq_1 = {1, 2, 3}; // same difficulty
+    private int[] seq_2 = {3, 2, 1, 3, 2, 1}; // free harder
+    private int[] seq_3 = {1, 1, 1}; // restrict harder
 
     // variable for recording the players current input sequence
     private int current_seq = 0;
@@ -73,17 +72,16 @@ public class PelletScript : MonoBehaviour
 
     // read in td_condition from Exit_app_script.cs
     private List<int> td_cond = new List<int>();
+
+    // create a round number variable to read in current td_condition
     private int round_num;
-
-    // need a round counter
-
 
     private void Awake()
     {
 
         beeFree = GameObject.FindGameObjectWithTag("bee_free");
         beeRestricted = GameObject.FindGameObjectWithTag("bee_restricted");
-        //audioData = GetComponent<AudioSource>();
+        audioData = GetComponent<AudioSource>();
 
         //
         Transform buttonGroup = new GameObject().transform;
@@ -120,8 +118,21 @@ public class PelletScript : MonoBehaviour
       round_num = Camera.main.GetComponent<Exit_app_script>().round_number;
       Debug.Log("round_num from PelletScript = " + round_num);
 
+      // set the sequence based on td_cond for this round
+      if(td_cond[round_num] == 1 || td_cond[round_num] == 4){
+        CORRECT_SEQUENCE = seq_1;
+      }
+
+      if(td_cond[round_num] == 2 || td_cond[round_num] == 5 ){
+        CORRECT_SEQUENCE = seq_2;
+      }
+
+      if(td_cond[round_num] == 3 || td_cond[round_num] == 6){
+        CORRECT_SEQUENCE = seq_3;
+      }
+
     }
-    
+
     private void OnEnable()
     {
         GetComponent<TapGesture>().Tapped += tappedHandler2;
@@ -205,9 +216,14 @@ public class PelletScript : MonoBehaviour
     private void tappedHandler2(object sender, EventArgs eventArgs)
     {
 
-      // if bee free is in contact and not holding a pellet
-      if (free_contact_on == true && beeFree.GetComponent<BeeTap>().grabbed_on == false && advanced_pellet == false)
+      // if bee free is in contact and not holding a pellet OR restrict in contact and not holding a pellet
+      if ((free_contact_on == true && beeFree.GetComponent<BeeTap>().grabbed_on == false && advanced_pellet == false) || (restrict_contact_on == true && beeRestricted.GetComponent<BeeTap>().grabbed_on == false && advanced_pellet == false))
       {
+
+          // identify who is trying to grab the pellet
+          if(free_contact_on == true && restrict_contact_on == false) grabber_base = 1;
+          if(restrict_contact_on == true && free_contact_on == false) grabber_base = 2;
+
           // If the yellow disk is not the size of the whole pellet
           if (scale_size < 1)
           {
@@ -234,11 +250,24 @@ public class PelletScript : MonoBehaviour
                   // change the disk back to all white? Of the player?
                   GetComponent<SpriteRenderer>().color = new Color(1,1,0);
 
-                  // enable moving again?
-                  beeFree.GetComponent<TouchScript.Behaviors.Transformer>().enabled = true;
-
-                  // ? making the little shapes active?
+                  // making the little shapes active?
                   foreach (GameObject ggoo in seqButtonsGO) ggoo.SetActive(true);
+
+                  // let free bee move again
+                  if (grabber_base == 1){
+                    // enable moving again
+                    beeFree.GetComponent<TouchScript.Behaviors.Transformer>().enabled = true;
+                    // turn contact off for next pellet
+                    free_contact_on = false;
+                  }
+
+                  // let restrict bee move again
+                  if (grabber_base == 2){
+                    // enable moving again
+                    beeRestricted.GetComponent<TouchScript.Behaviors.Transformer>().enabled = true;
+                    // turn contact off for next pellet
+                    restrict_contact_on = false;
+                  }
 
               }
           }
@@ -246,92 +275,48 @@ public class PelletScript : MonoBehaviour
           // if the yellow fills the pellet
           if (scale_size > 1)
           {
-                // note that free bee grabbed on to the advanced pellets
-                beeFree.GetComponent<BeeTap>().grabbed_on = true;
-                Debug.Log("FREE GRABBED ON");
-                free_contact_on = false;
-                Debug.Log("FREE CONTACT OFF");
-
-                // set the parent to be bee free
-                transform.SetParent(beeFree.transform);
 
                 //  disable pellet collider
                 GetComponent<Collider2D>().enabled = false;
                 GetComponent<Rigidbody2D>().isKinematic = true;
 
-                // move pellet onto the bee?
-                transform.position = beeFree.transform.position;
+                if(grabber_base == 1){
 
-                // put the pellet on it's back?
-                beeFree.GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
+                  // note that free bee grabbed on to the advanced pellets
+                  beeFree.GetComponent<BeeTap>().grabbed_on = true;
+                  Debug.Log("FREE GRABBED ON");
+                  free_contact_on = false;
+                  Debug.Log("FREE CONTACT OFF");
 
-          }
-      }
+                  // set the parent to be bee free
+                  transform.SetParent(beeFree.transform);
+                  // move pellet onto the bee?
+                  transform.position = beeFree.transform.position;
 
-      // if bee restricted is in contact and they aren't holding anything
-      if (restrict_contact_on == true && beeRestricted.GetComponent<BeeTap>().grabbed_on == false && advanced_pellet == false)
-      {
+                  // put the pellet on it's back?
+                  beeFree.GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
+                }
 
-          //Debug.Log("Restrict NOT grabbed on");
-          // If the yellow disk is not the size of the whole pellet
-          if (scale_size < 1)
-          {
-              // If there are at least two  more taps the whole pellet is yellow
-              if (scale_size + process_rate < 1)
-              {
-                  // adding size
-                  scale_size += process_rate;
+                if(grabber_base == 2){
 
-                  // updating the yellow disk size
-                  yellow_disk.localScale = new Vector3(scale_size, scale_size, 0);
-              }
-
-              // if the pellet has been worked enough
-              else
-              {
-                  scale_size = 2;
-                  worked = true;
-
-                  // remove the yellow disk // is this not working??
-                  Destroy(yellow_disk.gameObject);
-
-                  // change the disk back to all white? Of the player?
-                  GetComponent<SpriteRenderer>().color = new Color(1,1,0);
-
-                  // enable moving again?
-                  beeRestricted.GetComponent<TouchScript.Behaviors.Transformer>().enabled = true;
-
-                  // making the little shapes active?
-                  foreach (GameObject ggoo in seqButtonsGO) ggoo.SetActive(true);
-
-                  // turn contact off for next pellet
+                  // note that restricted bee grabbed on to the advanced pellets
+                  beeRestricted.GetComponent<BeeTap>().grabbed_on = true;
+                  Debug.Log("RESTRICT GRABBED ON");
                   restrict_contact_on = false;
-              }
-          }
+                  Debug.Log("RESTRICT CONTACT OFF");
 
-          // if the yellow fills the pellet
-          if (scale_size > 1)
-          {
+                  // set the parent to be bee restrict
+                  transform.SetParent(beeRestricted.transform);
+                  // move pellet onto the bee?
+                  transform.position = beeRestricted.transform.position;
 
-            // note that free bee grabbed on to the advanced pellets
-            beeRestricted.GetComponent<BeeTap>().grabbed_on = true;
-            Debug.Log("RESTRICT GRABBED ON");
-
-            // set the parent to be bee free
-            transform.SetParent(beeRestricted.transform);
-
-            //  disable pellet collider
-            GetComponent<Collider2D>().enabled = false;
-            GetComponent<Rigidbody2D>().isKinematic = true;
-
-            // move pellet onto the bee?
-            transform.position = beeRestricted.transform.position;
-
-            // put the pellet on it's back?
-            beeRestricted.GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
+                  // put the pellet on it's back?
+                  beeRestricted.GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
+                }
 
           }
       }
+
     }
 
     // this is called from the PelletSequenceButton.cs script;
@@ -339,15 +324,13 @@ public class PelletScript : MonoBehaviour
     public void addToSequence(int tapped_shape, SpriteRenderer sp)
     {
 
-        //audioData.clip = aClips[tapped_shape - 1];
-        //audioData.Play();
-
         // if bee_free is touching the pellet and not grabbing anything
-        if((free_contact_on == true && restrict_contact_on == false) || (restrict_contact_on == true && free_contact_on == false)){
+        if((free_contact_on == true && restrict_contact_on == false) || (restrict_contact_on == true && free_contact_on == false))
+        {
 
           // identify who is trying to grab the pellet
-          if(free_contact_on == true && restrict_contact_on == false) grabber = 1;
-          if(restrict_contact_on == true && free_contact_on == false) grabber = 2;
+          if(free_contact_on == true && restrict_contact_on == false) grabber_advanced = 1;
+          if(restrict_contact_on == true && free_contact_on == false) grabber_advanced = 2;
 
           Debug.Log("CONTACT ON");
           SeqButtons.RemoveAt(0);
@@ -361,13 +344,19 @@ public class PelletScript : MonoBehaviour
               if (tapped_shape == CORRECT_SEQUENCE[current_seq])
               {
                   current_seq++;
-                  // remove that button
-                  sp.enabled = false;
+
+                  // play a tune to let them know they're on the right pattern
+                  audioData.clip = aClips[0];
+                  audioData.Play();
               }
 
               // if they messed up the sequence
               else
               {
+                  // play a different tune to let them know
+                  audioData.clip = aClips[4];
+                  audioData.Play();
+
                   current_seq = 0;
                   seqCorresponds = false;
                   // put all buttons back
@@ -385,7 +374,7 @@ public class PelletScript : MonoBehaviour
               GameObject.Destroy(seqButtonsGO[0].transform.parent.gameObject);
 
               // if it's bee free doing the work
-              if(grabber == 1){
+              if(grabber_advanced == 1){
 
                 // note that free bee grabbed on to the advanced pellet
                 beeFree.GetComponent<BeeTap>().grabbed_on = true;
@@ -398,7 +387,7 @@ public class PelletScript : MonoBehaviour
               }
 
               // if it's bee restrict doing the work
-              if(grabber == 2){
+              if(grabber_advanced == 2){
 
                 // note that free bee grabbed on to the advanced pellet
                 beeRestricted.GetComponent<BeeTap>().grabbed_on = true;
