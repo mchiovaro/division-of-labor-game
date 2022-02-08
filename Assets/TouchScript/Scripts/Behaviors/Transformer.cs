@@ -1,12 +1,9 @@
 /*
-
-What does this script do??
-
  * @author Valentin Simonov / http://va.lent.in/
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Generic; // DIFF
 using TouchScript.Gestures;
 using TouchScript.Gestures.TransformGestures;
 using TouchScript.Gestures.TransformGestures.Base;
@@ -388,11 +385,11 @@ namespace TouchScript.Behaviors
         {
             if ((transformMask & TransformGesture.TransformType.Scaling) != 0) cachedTransform.localScale = targetScale;
             if ((transformMask & TransformGesture.TransformType.Rotation) != 0) cachedTransform.rotation = targetRotation;
-
+            if ((transformMask & TransformGesture.TransformType.Translation) != 0) cachedTransform.position = targetPosition;
             if ((transformMask & TransformGesture.TransformType.Translation) != 0)
             {
 
-                checkBoundaries();
+                //checkBoundaries();
             }
 
             transformMask = TransformGesture.TransformType.None;
@@ -449,7 +446,7 @@ namespace TouchScript.Behaviors
             // field barriers (y coord comes from middle so +/1 0.3 means a 0.2 overlap, the same as left/right)
             float field_top = drop_cells.transform.GetChild(0).position.y + 0.3f;
             float field_bottom = drop_cells.transform.GetChild(9).position.y - 0.3f;
-
+/*
             // SPAWN and DROP: don't allow any passing
             if (targetPosition.x < barrier_drop) targetPosition2.x = barrier_drop;
             if (targetPosition.x > barrier_spawn) targetPosition2.x = barrier_spawn;
@@ -470,7 +467,7 @@ namespace TouchScript.Behaviors
                 //Debug.Log("TRIGGERING FROM LEFT");
                 targetPosition2.x = barrier_left;
             }
-
+*/
 
             cachedTransform.position = targetPosition2;
 
