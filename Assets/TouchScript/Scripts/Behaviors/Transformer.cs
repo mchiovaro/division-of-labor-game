@@ -389,7 +389,7 @@ namespace TouchScript.Behaviors
             if ((transformMask & TransformGesture.TransformType.Translation) != 0)
             {
 
-                //checkBoundaries();
+                checkBoundaries();
             }
 
             transformMask = TransformGesture.TransformType.None;
@@ -446,7 +446,7 @@ namespace TouchScript.Behaviors
             // field barriers (y coord comes from middle so +/1 0.3 means a 0.2 overlap, the same as left/right)
             float field_top = drop_cells.transform.GetChild(0).position.y + 0.3f;
             float field_bottom = drop_cells.transform.GetChild(9).position.y - 0.3f;
-/*
+
             // SPAWN and DROP: don't allow any passing
             if (targetPosition.x < barrier_drop) targetPosition2.x = barrier_drop;
             if (targetPosition.x > barrier_spawn) targetPosition2.x = barrier_spawn;
@@ -458,16 +458,15 @@ namespace TouchScript.Behaviors
             //WORK ROW: if they are coming from the right and they are within the two barriers, block them                                   // add a little room so they can overlap
             if (from_where == FROM_RIGHT && targetPosition.x < barrier_right && targetPosition.y < barrier_top && targetPosition.y > barrier_bottom)
             {
-                //Debug.Log("TRIGGERING FROM RIGHT");
+                Debug.Log("TRIGGERING FROM RIGHT");
                 targetPosition2.x = barrier_right;
             }
             //WORK ROW: if they are coming from the left and they are within the two barriers, block them                                     // add a little room so they can overlap
             else if (from_where == FROM_LEFT && targetPosition.x > barrier_left && targetPosition.y < barrier_top && targetPosition.y > barrier_bottom)
             {
-                //Debug.Log("TRIGGERING FROM LEFT");
+                Debug.Log("TRIGGERING FROM LEFT");
                 targetPosition2.x = barrier_left;
             }
-*/
 
             cachedTransform.position = targetPosition2;
 
