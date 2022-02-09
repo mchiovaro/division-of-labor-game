@@ -68,7 +68,7 @@ public class PelletScript : MonoBehaviour
 
     // add reference to Exit_app_script to grab td and ie conditions
     Exit_app_script exitappscript;
-    Exit_app_script exitappscript2;
+    //Exit_app_script exitappscript2;
 
     // read in td_condition from Exit_app_script.cs
     private List<int> td_cond = new List<int>();
@@ -116,7 +116,8 @@ public class PelletScript : MonoBehaviour
 
       // get the round number from Exit_app_script
       round_num = Camera.main.GetComponent<Exit_app_script>().round_number;
-      Debug.Log("round_num from PelletScript = " + round_num);
+      //Debug.Log("round_num from PelletScript = " + round_num);
+      //Debug.Log("td_cond from PelletScript = " + td_cond[round_num]);
 
       // set the sequence based on td_cond for this round
       if(td_cond[round_num] == 1 || td_cond[round_num] == 4){

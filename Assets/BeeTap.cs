@@ -14,7 +14,7 @@ public class BeeTap : MonoBehaviour
     public bool grabbed_on;
 
     Collider2D player_coll; // collider for the players
-    Collider2D[] work_cell; // collider for the cells
+    //Collider2D[] work_cell; // collider for the cells
 
     private Color pellet_color = new Color(1, 1, 1);
 

@@ -260,8 +260,8 @@ public class Exit_app_script : MonoBehaviour
         if (!(practice_mode) && running_)
         {
             // set up saving location
-            string filetitle = RA_initials + "-" + ParticipantNumber;
-            string path = "Assets/Resources/Data/" + filetitle + "-movement_data.csv";
+            string filetitle = "" + ParticipantNumber;
+            string path = "Assets/Resources/Data/" + filetitle + "-movementdata.csv";
 
             // create writer
             StreamWriter writer = new StreamWriter(path, true);

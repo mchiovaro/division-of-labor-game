@@ -23,6 +23,8 @@ TagManager:
   - work_cell
   - spawn_cell
   - button_1
+  - messagebox_free
+  - messagebox_restrict
   layers:
   - Default
   - TransparentFX
