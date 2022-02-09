@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine.UI;
 using System.Collections;
-//using Unity.TextMeshPro;
 using TMPro;
 
 // <exclude />
@@ -78,13 +77,8 @@ public class ButtonTap : MonoBehaviour
     {
 
       string buttonname = transform.name;
-      //Debug.Log("TAG = " + tag);
-      //Debug.Log("ParticipantNumber from ButtonTap = " + ParticipantNumber);
-      //Debug.Log("round_num from ButtonTap = " + round_num);
-      //Debug.Log("td_cond from ButtonTap = " + td_cond[round_num]);
 
       // set up saving location
-      //string filetitle =  "" + ParticipantNumber;
       string path = "Assets/Resources/Data/" + ParticipantNumber + "-buttonlog.csv";
 
       // create writer
