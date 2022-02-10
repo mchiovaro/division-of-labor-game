@@ -25,6 +25,8 @@ TagManager:
   - button_1
   - messagebox_free
   - messagebox_restrict
+  - buttons
+  - messagebox
   layers:
   - Default
   - TransparentFX

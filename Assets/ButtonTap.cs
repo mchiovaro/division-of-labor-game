@@ -18,27 +18,39 @@ public class ButtonTap : MonoBehaviour
     // read in td_condition from Exit_app_script.cs
     private List<int> td_cond = new List<int>();
 
-    // create a round number variable to read in current td_condition
-    private int round_num;
-    private int ParticipantNumber;
+    // create a variables
+    private int ParticipantNumber, round_num, com_cond, ie_cond, size_cond;
 
+    // create text holder from buttonlog
     public String text;
 
+    // locate message boxes
     public GameObject message_free, message_restrict;
 
+    // create strings for holding the sets of button names
     List<string> freebuttons = new List<string> { "button_free_1", "button_free_2", "button_free_3", "button_free_4"};
     List<string> restrictbuttons = new List<string> { "button_restrict_1", "button_restrict_2", "button_restrict_3", "button_restrict_4"};
 
     private void Start()
     {
 
-      // get td_condition and ParticipantNumber from Exit_app_script
+      // get td_condition from Exit_app_script
       exitappscript = Camera.main.GetComponent<Exit_app_script>();
       td_cond = exitappscript.td_condition;
-      ParticipantNumber = exitappscript.ParticipantNumber;
 
-      // get the round number from Exit_app_script
+      // get the round number and other conditions from Exit_app_script
+      ParticipantNumber = exitappscript.ParticipantNumber;
       round_num = Camera.main.GetComponent<Exit_app_script>().round_number;
+      com_cond = Camera.main.GetComponent<Exit_app_script>().com_condition;
+      ie_cond = Camera.main.GetComponent<Exit_app_script>().ie_condition;
+      size_cond = Camera.main.GetComponent<Exit_app_script>().size_condition;
+
+    //  Debug.Log("BUTTONTAP SCRIPT ParticipantNumber = " + ParticipantNumber
+    //            + " round_num = " + round_num
+    //            + " com_cond = " + com_cond
+    //            + " ie_cond = " + ie_cond
+    //            + " size_cond = " + size_cond);
+
 
       // find the text boxes
       message_free = GameObject.FindGameObjectWithTag("messagebox_free");
@@ -87,6 +99,7 @@ public class ButtonTap : MonoBehaviour
       // create the string when button is pressed logging time and participant position data
       string next_line = System.DateTime.Now + ","
                         + Time.time + ","
+                        + ParticipantNumber + ","
                         + round_num + ","
                         + td_cond[round_num] + ","
                         + buttonname;

@@ -68,17 +68,17 @@ public class PelletScript : MonoBehaviour
 
     // add reference to Exit_app_script to grab td and ie conditions
     Exit_app_script exitappscript;
-    //Exit_app_script exitappscript2;
 
-    // read in td_condition from Exit_app_script.cs
+    // create list for td_condition from Exit_app_script.cs
     private List<int> td_cond = new List<int>();
 
-    // create a round number variable to read in current td_condition
-    private int round_num;
+    // create a other variables to read in current td_condition
+    private int ParticipantNumber, round_num, com_cond, ie_cond, size_cond;
 
     private void Awake()
     {
 
+        // locate objects
         beeFree = GameObject.FindGameObjectWithTag("bee_free");
         beeRestricted = GameObject.FindGameObjectWithTag("bee_restricted");
         audioData = GetComponent<AudioSource>();
@@ -114,24 +114,46 @@ public class PelletScript : MonoBehaviour
       exitappscript = Camera.main.GetComponent<Exit_app_script>();
       td_cond = exitappscript.td_condition;
 
-      // get the round number from Exit_app_script
+      // get the round number and other conditions from Exit_app_script
+      ParticipantNumber = exitappscript.ParticipantNumber;
       round_num = Camera.main.GetComponent<Exit_app_script>().round_number;
-      //Debug.Log("round_num from PelletScript = " + round_num);
-      //Debug.Log("td_cond from PelletScript = " + td_cond[round_num]);
+      com_cond = Camera.main.GetComponent<Exit_app_script>().com_condition;
+      ie_cond = Camera.main.GetComponent<Exit_app_script>().ie_condition;
+      size_cond = Camera.main.GetComponent<Exit_app_script>().size_condition;
+
+      Debug.Log("PELLETSCRIPT ParticipantNumber = " + ParticipantNumber
+                + " round_num = " + round_num
+                + " com_cond = " + com_cond
+                + " ie_cond = " + ie_cond
+                + " size_cond = " + size_cond);
 
       // set the sequence based on td_cond for this round
-      if(td_cond[round_num] == 1 || td_cond[round_num] == 4){
-        CORRECT_SEQUENCE = seq_1;
-      }
+      if(td_cond[round_num] == 1 || td_cond[round_num] == 4)CORRECT_SEQUENCE = seq_1;
+      if(td_cond[round_num] == 2 || td_cond[round_num] == 5 )CORRECT_SEQUENCE = seq_2;
+      if(td_cond[round_num] == 3 || td_cond[round_num] == 6)CORRECT_SEQUENCE = seq_3;
 
-      if(td_cond[round_num] == 2 || td_cond[round_num] == 5 ){
-        CORRECT_SEQUENCE = seq_2;
-      }
+      // set up saving location
+      string path = "Assets/Resources/Data/" + ParticipantNumber + "-pelletlog.csv";
+/*
+      // create writer
+      StreamWriter writer = new StreamWriter(path, true);
 
-      if(td_cond[round_num] == 3 || td_cond[round_num] == 6){
-        CORRECT_SEQUENCE = seq_3;
-      }
+      // create the string when button is pressed logging time and participant position data
+      string next_line = System.DateTime.Now + ","
+                        + Time.time + ","
+                        + ParticipantNumber + ","
+                        + round_num + ","
+                        + td_cond[round_num] + ","
+                        + com_cond + ","
+                        + size_cond + ","
+                        + buttonname;
 
+      // write the line
+      writer.WriteLine(next_line);
+
+      // close the writer
+      writer.Close();
+*/
     }
 
     private void OnEnable()

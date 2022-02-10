@@ -7,7 +7,7 @@ public class Exit_app_script : MonoBehaviour
 {
     float ScToWRatio; // some camera ratio?
     GameObject work_cells, drop_cells, spawn_cells;
-    public GameObject foodPrefab, beeFree, beeRestrict;
+    public GameObject foodPrefab, beeFree, beeRestrict, buttons, messageboxes;
 
     // input parameters
     public int ParticipantNumber; // pulls from the excel sheet with conditions
@@ -124,6 +124,12 @@ public class Exit_app_script : MonoBehaviour
         beeFree = GameObject.FindGameObjectWithTag("bee_free");
         beeRestrict = GameObject.FindGameObjectWithTag("bee_restricted");
 
+        // find buttons and message message boxes
+        buttons = GameObject.FindGameObjectWithTag("buttons");
+        buttons.SetActive(false);
+        messageboxes = GameObject.FindGameObjectWithTag("messagebox");
+        messageboxes.SetActive(false);
+
         // set camera ratio
         ScToWRatio = 1080 / (2 * Camera.main.orthographicSize);
 
@@ -133,6 +139,8 @@ public class Exit_app_script : MonoBehaviour
         // check to see what the communication condition is and create communication buttons if condition 2
         if(com_condition == 1){
           //Debug.Log("Com condition working");
+          buttons.SetActive(true);
+          messageboxes.SetActive(true);
         }
 
     }

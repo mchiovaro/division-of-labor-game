@@ -2239,6 +2239,7 @@ MonoBehaviour:
     type: 3}
   beeFree: {fileID: 0}
   beeRestrict: {fileID: 0}
+  buttons: {fileID: 0}
   ParticipantNumber: 2
   RA_initials: Billy Bob
   td_condition: 
@@ -2341,7 +2342,7 @@ GameObject:
   - component: {fileID: 575539323}
   m_Layer: 0
   m_Name: MessageBoxes
-  m_TagString: Untagged
+  m_TagString: messagebox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2635,7 +2636,7 @@ GameObject:
   - component: {fileID: 669322862}
   m_Layer: 0
   m_Name: buttons
-  m_TagString: Untagged
+  m_TagString: buttons
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
