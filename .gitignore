@@ -5,6 +5,7 @@
 [Bb]uilds/
 Assets/AssetStoreTools*
 .DS_Store
+Logs/
 # Data output directory
 Assets/Resources/Data
 
