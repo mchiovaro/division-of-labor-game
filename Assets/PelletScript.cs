@@ -8,6 +8,7 @@ using TouchScript.Gestures;
 using UnityEngine;
 using System.Collections.Generic;
 using Random = UnityEngine.Random;
+using System.IO;
 
 
 /// <exclude />
@@ -39,8 +40,6 @@ public class PelletScript : MonoBehaviour
     Collider2D[] work_cell;
     Collider2D[] spawn_cell;
 
-// TASK DEMAND VARIABLES
-
     // CONDITION: Change this number for the number of taps for bee free
     private float process_rate = 1.0f/2;
 
@@ -69,11 +68,9 @@ public class PelletScript : MonoBehaviour
     // add reference to Exit_app_script to grab td and ie conditions
     Exit_app_script exitappscript;
 
-    // create list for td_condition from Exit_app_script.cs
-    private List<int> td_cond = new List<int>();
-
-    // create a other variables to read in current td_condition
-    private int ParticipantNumber, round_num, com_cond, ie_cond, size_cond;
+    // initialize conditions variables
+    public List<int> td_cond = new List<int>(7);
+    public int ParticipantNumber, round_num, ie_cond, com_cond, size_cond, experiment_num;
 
     private void Awake()
     {
@@ -93,7 +90,7 @@ public class PelletScript : MonoBehaviour
         {
             seqButtonsGO.Add(tt.gameObject);
             tt.gameObject.SetActive(false);
-            SeqButtons.Add(0);
+            //SeqButtons.Add(0);
         }
 
         work_cell = GameObject.FindGameObjectWithTag("work_row_middle").GetComponentsInChildren<Collider2D>();
@@ -121,39 +118,24 @@ public class PelletScript : MonoBehaviour
       ie_cond = Camera.main.GetComponent<Exit_app_script>().ie_condition;
       size_cond = Camera.main.GetComponent<Exit_app_script>().size_condition;
 
-      Debug.Log("PELLETSCRIPT ParticipantNumber = " + ParticipantNumber
-                + " round_num = " + round_num
-                + " com_cond = " + com_cond
-                + " ie_cond = " + ie_cond
-                + " size_cond = " + size_cond);
+      // start a data file
+      //string filetitle = RA_initials + "-" + ParticipantNumber;
+      string path = "Assets/Resources/Data/"+ ParticipantNumber + "-pelletID-" + pelletID + ".csv";
+
+      StreamWriter writer = new StreamWriter(path, true);
+
+      string header_string = "System.DateTime.Now,Time.time,ParticipantNumber,round_number,ie_condition,td_condition,com_condition,size_condition,experiment_num,x_position,y_position,pelletID,event";
+
+      writer.WriteLine(header_string);
+      writer.Close();
+
+      // log the spawn
+      saveToBuffer("SPAWN");
 
       // set the sequence based on td_cond for this round
       if(td_cond[round_num] == 1 || td_cond[round_num] == 4)CORRECT_SEQUENCE = seq_1;
       if(td_cond[round_num] == 2 || td_cond[round_num] == 5 )CORRECT_SEQUENCE = seq_2;
       if(td_cond[round_num] == 3 || td_cond[round_num] == 6)CORRECT_SEQUENCE = seq_3;
-
-      // set up saving location
-      string path = "Assets/Resources/Data/" + ParticipantNumber + "-pelletlog.csv";
-/*
-      // create writer
-      StreamWriter writer = new StreamWriter(path, true);
-
-      // create the string when button is pressed logging time and participant position data
-      string next_line = System.DateTime.Now + ","
-                        + Time.time + ","
-                        + ParticipantNumber + ","
-                        + round_num + ","
-                        + td_cond[round_num] + ","
-                        + com_cond + ","
-                        + size_cond + ","
-                        + buttonname;
-
-      // write the line
-      writer.WriteLine(next_line);
-
-      // close the writer
-      writer.Close();
-*/
     }
 
     private void OnEnable()
@@ -183,16 +165,16 @@ public class PelletScript : MonoBehaviour
       if (collider_.tag.Equals("bee_free")){
         my_colliders["bee_free"] = true;
         free_contact_on = true;
-        Debug.Log(collider_.gameObject.tag + " contact on");
+        //Debug.Log(collider_.gameObject.tag + " contact on");
         if (collider_.transform.position.x < 0)
         {
             from = left;
-            Debug.Log("coming from left");
+            //Debug.Log("coming from left");
         }
         else
         {
             from = right;
-            Debug.Log("coming from right");
+            //Debug.Log("coming from right");
         }
       }
 
@@ -200,16 +182,16 @@ public class PelletScript : MonoBehaviour
       if (collider_.tag.Equals("bee_restricted")){
         my_colliders["bee_restricted"] = true;
         restrict_contact_on = true;
-        Debug.Log(collider_.gameObject.tag + " contact on");
+        //Debug.Log(collider_.gameObject.tag + " contact on");
         if (collider_.transform.position.x < 0)
         {
             from = left;
-            Debug.Log("coming from left");
+            //Debug.Log("coming from left");
         }
         else
         {
             from = right;
-            Debug.Log("coming from right");
+            //Debug.Log("coming from right");
         }
       }
     }
@@ -222,7 +204,7 @@ public class PelletScript : MonoBehaviour
         {
             my_colliders["bee_free"] = false;
             free_contact_on = false;
-            Debug.Log(collider_.gameObject.tag + " contact off");
+            //Debug.Log(collider_.gameObject.tag + " contact off");
         }
 
         // if the collider object that moved away was bee restricted, set contact false and give debug message
@@ -230,7 +212,7 @@ public class PelletScript : MonoBehaviour
         {
           my_colliders["bee_restricted"] = false;
           restrict_contact_on = false;
-          Debug.Log(collider_.gameObject.tag + " contact off");
+          //Debug.Log(collider_.gameObject.tag + " contact off");
 
         }
     }
@@ -250,6 +232,10 @@ public class PelletScript : MonoBehaviour
           // If the yellow disk is not the size of the whole pellet
           if (scale_size < 1)
           {
+              // log the tap
+              if(grabber_base == 1) saveToBuffer("1_TAPPED");
+              if(grabber_base == 2) saveToBuffer("2_TAPPED");
+
               // If there are at least two  more taps the whole pellet is yellow
               if (scale_size + process_rate < 1)
               {
@@ -307,9 +293,11 @@ public class PelletScript : MonoBehaviour
 
                   // note that free bee grabbed on to the advanced pellets
                   beeFree.GetComponent<BeeTap>().grabbed_on = true;
-                  Debug.Log("FREE GRABBED ON");
+                  //Debug.Log("FREE GRABBED ON");
+                  // log the pickup
+                  saveToBuffer("1_PICKUP");
                   free_contact_on = false;
-                  Debug.Log("FREE CONTACT OFF");
+                  //Debug.Log("FREE CONTACT OFF");
 
                   // set the parent to be bee free
                   transform.SetParent(beeFree.transform);
@@ -324,9 +312,11 @@ public class PelletScript : MonoBehaviour
 
                   // note that restricted bee grabbed on to the advanced pellets
                   beeRestricted.GetComponent<BeeTap>().grabbed_on = true;
-                  Debug.Log("RESTRICT GRABBED ON");
+                  //Debug.Log("RESTRICT GRABBED ON");
+                  // log the pickup
+                  saveToBuffer("2_PICKUP");
                   restrict_contact_on = false;
-                  Debug.Log("RESTRICT CONTACT OFF");
+                  //Debug.Log("RESTRICT CONTACT OFF");
 
                   // set the parent to be bee restrict
                   transform.SetParent(beeRestricted.transform);
@@ -352,12 +342,22 @@ public class PelletScript : MonoBehaviour
         {
 
           // identify who is trying to grab the pellet
-          if(free_contact_on == true && restrict_contact_on == false) grabber_advanced = 1;
-          if(restrict_contact_on == true && free_contact_on == false) grabber_advanced = 2;
+          if(free_contact_on == true && restrict_contact_on == false)
+          {
+            grabber_advanced = 1;
+            saveToBuffer("1_TAPPED_" + tapped_shape);
 
-          Debug.Log("CONTACT ON");
-          SeqButtons.RemoveAt(0);
-          SeqButtons.Add(tapped_shape);
+          }
+
+          if(restrict_contact_on == true && free_contact_on == false)
+          {
+            grabber_advanced = 2;
+            saveToBuffer("2_TAPPED_" + tapped_shape);
+          }
+
+          //Debug.Log("CONTACT ON");
+          //SeqButtons.RemoveAt(0);
+          //SeqButtons.Add(tapped_shape);
           bool seqCorresponds = true;
 
           // if they haven't done the full sequence yet and they are approaching from the left
@@ -366,6 +366,7 @@ public class PelletScript : MonoBehaviour
               // if their taps were in the right order but they aren't done yet
               if (tapped_shape == CORRECT_SEQUENCE[current_seq])
               {
+                  //Debug.Log(tapped_shape);
                   current_seq++;
 
                   // play a tune to let them know they're on the right pattern
@@ -390,14 +391,15 @@ public class PelletScript : MonoBehaviour
           // if the player does the right sequence
           if (seqCorresponds && current_seq == CORRECT_SEQUENCE.Length)
           {
-              // record that bee free worked a pellet at that moment
-              saveToBuffer("GR_WORK");
 
               // destroy the inner buttons
               GameObject.Destroy(seqButtonsGO[0].transform.parent.gameObject);
 
               // if it's bee free doing the work
               if(grabber_advanced == 1){
+
+                // log the pick up
+                saveToBuffer("1_PICKUP_MID");
 
                 // note that free bee grabbed on to the advanced pellet
                 beeFree.GetComponent<BeeTap>().grabbed_on = true;
@@ -411,6 +413,9 @@ public class PelletScript : MonoBehaviour
 
               // if it's bee restrict doing the work
               if(grabber_advanced == 2){
+
+                // log the pick up
+                saveToBuffer("2_PICKUP_MID");
 
                 // note that free bee grabbed on to the advanced pellet
                 beeRestricted.GetComponent<BeeTap>().grabbed_on = true;
@@ -433,11 +438,26 @@ public class PelletScript : MonoBehaviour
 
     public void saveToBuffer(string stringus)
     {
-        Exit_app_script e_a_s = Camera.main.GetComponent<Exit_app_script>();
+      string path = "Assets/Resources/Data/"+ ParticipantNumber + "-pelletID-" + pelletID + ".csv";
 
-        // save the pellets position and frame
-        e_a_s.pellData[pelletID].pelletEvent.Add("X_" + transform.position.x + "_Y_" + transform.position.y + "_" + stringus);
-        e_a_s.pellData[pelletID].frameNum.Add(e_a_s.round_number - 1);
+      StreamWriter writer = new StreamWriter(path, true);
+
+      string data = System.DateTime.Now + ","
+                      + Time.time + ","
+                      + ParticipantNumber + ","
+                      + round_num + ","
+                      + ie_cond + ","
+                      + td_cond[round_num] + ","
+                      + com_cond + ","
+                      + size_cond + ","
+                      + experiment_num + ","
+                      + transform.position.x + ","
+                      + transform.position.y + ","
+                      + pelletID + ","
+                      + stringus;
+
+      writer.WriteLine(data);
+      writer.Close();
 
     }
 }

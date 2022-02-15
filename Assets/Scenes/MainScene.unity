@@ -2240,12 +2240,14 @@ MonoBehaviour:
   beeFree: {fileID: 0}
   beeRestrict: {fileID: 0}
   buttons: {fileID: 0}
+  messageboxes: {fileID: 0}
   ParticipantNumber: 2
   RA_initials: Billy Bob
   td_condition: 
   ie_condition: 0
   com_condition: 0
   size_condition: 0
+  experiment_num: 0
   round_number: 0
   pellets_dropped: 0
   ui_text: {fileID: 1886801546}

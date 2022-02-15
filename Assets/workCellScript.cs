@@ -106,7 +106,7 @@ public class workCellScript : MonoBehaviour
         if (pellet_ != null && restrict_contact_cell == true)
         {
 
-            //pellet_.GetComponent<PelletScript>().saveToBuffer("DR_WORK");
+            pellet_.GetComponent<PelletScript>().saveToBuffer("2_DROP_MID");
 
             // remove the player as the parent
             pellet_.transform.SetParent(null);
@@ -133,7 +133,7 @@ public class workCellScript : MonoBehaviour
         if (pellet_ != null && free_contact_cell == true)
         {
 
-            //pellet_.GetComponent<PelletScript>().saveToBuffer("DR_WORK");
+            pellet_.GetComponent<PelletScript>().saveToBuffer("1_DROP_MID");
 
             // remove the player as the parent
             pellet_.transform.SetParent(null);

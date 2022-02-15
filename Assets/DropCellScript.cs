@@ -73,10 +73,7 @@ public class DropCellScript : MonoBehaviour
 
                     GameObject pellet_ = player_coll.transform.GetChild(0).gameObject;
 
-                    // log that the pellet was dropped
-                    pellet_.GetComponent<PelletScript>().saveToBuffer("DR_DROP");
-
-                    // render the pellet in the cell?
+                    // render the pellet in the cell
                     pellet_.GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.5f, 0.0f);
                     pellet_.transform.SetParent(null);
                     pellet_.transform.position = transform.position + new Vector3(offset,0,0);
@@ -86,14 +83,16 @@ public class DropCellScript : MonoBehaviour
 
                     pelletCounter++;
 
-                    // turn the player back to their color?
+                    // turn the player back to their color and log the drop
                     if (player_coll.tag.Equals("bee_free"))
                     {
                         player_coll.GetComponent<SpriteRenderer>().color = Color.red;
+                        pellet_.GetComponent<PelletScript>().saveToBuffer("1_DROP_END");
                     }
                     else
                     {
                         player_coll.GetComponent<SpriteRenderer>().color = Color.blue;
+                        pellet_.GetComponent<PelletScript>().saveToBuffer("2_DROP_END");
                     }
 
                     // reset dropping taps to 0

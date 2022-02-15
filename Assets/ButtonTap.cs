@@ -19,7 +19,7 @@ public class ButtonTap : MonoBehaviour
     private List<int> td_cond = new List<int>();
 
     // create a variables
-    private int ParticipantNumber, round_num, com_cond, ie_cond, size_cond;
+    private int ParticipantNumber, round_num, com_cond, ie_cond, size_cond, experiment_num;
 
     // create text holder from buttonlog
     public String text;
@@ -44,13 +44,7 @@ public class ButtonTap : MonoBehaviour
       com_cond = Camera.main.GetComponent<Exit_app_script>().com_condition;
       ie_cond = Camera.main.GetComponent<Exit_app_script>().ie_condition;
       size_cond = Camera.main.GetComponent<Exit_app_script>().size_condition;
-
-    //  Debug.Log("BUTTONTAP SCRIPT ParticipantNumber = " + ParticipantNumber
-    //            + " round_num = " + round_num
-    //            + " com_cond = " + com_cond
-    //            + " ie_cond = " + ie_cond
-    //            + " size_cond = " + size_cond);
-
+      experiment_num = Camera.main.GetComponent<Exit_app_script>().experiment_num;
 
       // find the text boxes
       message_free = GameObject.FindGameObjectWithTag("messagebox_free");
@@ -59,6 +53,16 @@ public class ButtonTap : MonoBehaviour
       // set text to blank
       message_free.GetComponent<TMP_Text>().text = "";
       message_restrict.GetComponent<TMP_Text>().text = "";
+
+      // set up the file
+      // set up saving location
+      string path = "Assets/Resources/Data/" + ParticipantNumber + "-buttonlog.csv";
+
+      // create writer
+      StreamWriter writer = new StreamWriter(path, true);
+      string header_string = "System.DateTime.Now,Time.time,ParticipantNumber,round_number,ie_condition,td_condition,com_condition,size_condition,experiment_num,buttonname";
+      writer.WriteLine(header_string); // write the line
+      writer.Close(); // close the writer
 
     }
 
@@ -96,12 +100,17 @@ public class ButtonTap : MonoBehaviour
       // create writer
       StreamWriter writer = new StreamWriter(path, true);
 
+      //string header_string = "System.DateTime.Now,Time.time,ParticipantNumber,round_number,ie_condition,td_condition,com_condition,size_condition,experiment_num";
+
       // create the string when button is pressed logging time and participant position data
       string next_line = System.DateTime.Now + ","
                         + Time.time + ","
                         + ParticipantNumber + ","
                         + round_num + ","
                         + td_cond[round_num] + ","
+                        + com_cond + ","
+                        + size_cond + ","
+                        + experiment_num + ","
                         + buttonname;
 
       // write the line

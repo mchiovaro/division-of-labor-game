@@ -458,13 +458,11 @@ namespace TouchScript.Behaviors
             //WORK ROW: if they are coming from the right and they are within the two barriers, block them                                   // add a little room so they can overlap
             if (from_where == FROM_RIGHT && targetPosition.x < barrier_right && targetPosition.y < barrier_top && targetPosition.y > barrier_bottom)
             {
-                Debug.Log("TRIGGERING FROM RIGHT");
                 targetPosition2.x = barrier_right;
             }
             //WORK ROW: if they are coming from the left and they are within the two barriers, block them                                     // add a little room so they can overlap
             else if (from_where == FROM_LEFT && targetPosition.x > barrier_left && targetPosition.y < barrier_top && targetPosition.y > barrier_bottom)
             {
-                Debug.Log("TRIGGERING FROM LEFT");
                 targetPosition2.x = barrier_left;
             }
 
