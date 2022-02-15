@@ -51,7 +51,6 @@ public class PelletScript : MonoBehaviour
     // allows yellow disk to be scaled up
     private Transform yellow_disk;
 
-    // CONDITION: Change for beeFree
     //correct tapping sequence on inner shapes (can add 3 more, 1,2,3 again)
     private int[] CORRECT_SEQUENCE; //= {1, 2, 3};
     private int[] seq_1 = {1, 2, 3}; // same difficulty
@@ -119,15 +118,18 @@ public class PelletScript : MonoBehaviour
       size_cond = Camera.main.GetComponent<Exit_app_script>().size_condition;
 
       // start a data file
-      //string filetitle = RA_initials + "-" + ParticipantNumber;
-      string path = "Assets/Resources/Data/"+ ParticipantNumber + "-pelletID-" + pelletID + ".csv";
+      if(pelletID == 0) {
 
-      StreamWriter writer = new StreamWriter(path, true);
+        string path = "Assets/Resources/Data/"+ ParticipantNumber + "-PelletData.csv";
 
-      string header_string = "System.DateTime.Now,Time.time,ParticipantNumber,round_number,ie_condition,td_condition,com_condition,size_condition,experiment_num,x_position,y_position,pelletID,event";
+        StreamWriter writer = new StreamWriter(path, true);
 
-      writer.WriteLine(header_string);
-      writer.Close();
+        string header_string = "System.DateTime.Now,Time.time,ParticipantNumber,round_number,ie_condition,td_condition,com_condition,size_condition,experiment_num,x_position,y_position,pelletID,event";
+
+        writer.WriteLine(header_string);
+        writer.Close();
+
+      }
 
       // log the spawn
       saveToBuffer("SPAWN");
@@ -163,9 +165,10 @@ public class PelletScript : MonoBehaviour
 
       // if the collided object is bee free, set contact true and give a debug message
       if (collider_.tag.Equals("bee_free")){
+
         my_colliders["bee_free"] = true;
         free_contact_on = true;
-        //Debug.Log(collider_.gameObject.tag + " contact on");
+
         if (collider_.transform.position.x < 0)
         {
             from = left;
@@ -180,9 +183,10 @@ public class PelletScript : MonoBehaviour
 
       // if the collided object is bee free, set contact true and give a debug message
       if (collider_.tag.Equals("bee_restricted")){
+
         my_colliders["bee_restricted"] = true;
         restrict_contact_on = true;
-        //Debug.Log(collider_.gameObject.tag + " contact on");
+
         if (collider_.transform.position.x < 0)
         {
             from = left;
@@ -355,9 +359,6 @@ public class PelletScript : MonoBehaviour
             saveToBuffer("2_TAPPED_" + tapped_shape);
           }
 
-          //Debug.Log("CONTACT ON");
-          //SeqButtons.RemoveAt(0);
-          //SeqButtons.Add(tapped_shape);
           bool seqCorresponds = true;
 
           // if they haven't done the full sequence yet and they are approaching from the left
@@ -438,7 +439,7 @@ public class PelletScript : MonoBehaviour
 
     public void saveToBuffer(string stringus)
     {
-      string path = "Assets/Resources/Data/"+ ParticipantNumber + "-pelletID-" + pelletID + ".csv";
+      string path = "Assets/Resources/Data/"+ ParticipantNumber + "-PelletData.csv";
 
       StreamWriter writer = new StreamWriter(path, true);
 
