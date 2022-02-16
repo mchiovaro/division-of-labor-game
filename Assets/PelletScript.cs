@@ -237,8 +237,16 @@ public class PelletScript : MonoBehaviour
           if (scale_size < 1)
           {
               // log the tap
-              if(grabber_base == 1) saveToBuffer("1_TAPPED");
-              if(grabber_base == 2) saveToBuffer("2_TAPPED");
+              if(grabber_base == 1)
+              {
+                saveToBuffer("1_TAPPED");
+                beeFree.GetComponent<TouchScript.Behaviors.Transformer>().enabled = false;
+              }
+              if(grabber_base == 2)
+              {
+                saveToBuffer("2_TAPPED");
+                beeRestricted.GetComponent<TouchScript.Behaviors.Transformer>().enabled = false;
+              }
 
               // If there are at least two  more taps the whole pellet is yellow
               if (scale_size + process_rate < 1)
@@ -350,6 +358,7 @@ public class PelletScript : MonoBehaviour
           {
             grabber_advanced = 1;
             saveToBuffer("1_TAPPED_" + tapped_shape);
+            beeFree.GetComponent<TouchScript.Behaviors.Transformer>().enabled = false;
 
           }
 
@@ -357,6 +366,7 @@ public class PelletScript : MonoBehaviour
           {
             grabber_advanced = 2;
             saveToBuffer("2_TAPPED_" + tapped_shape);
+            beeRestricted.GetComponent<TouchScript.Behaviors.Transformer>().enabled = false;
           }
 
           bool seqCorresponds = true;
@@ -409,7 +419,7 @@ public class PelletScript : MonoBehaviour
                 transform.SetParent(beeFree.transform);
                 transform.position = beeFree.transform.position;
                 beeFree.GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
-
+                beeFree.GetComponent<TouchScript.Behaviors.Transformer>().enabled = true;
               }
 
               // if it's bee restrict doing the work
@@ -425,7 +435,7 @@ public class PelletScript : MonoBehaviour
                 transform.SetParent(beeRestricted.transform);
                 transform.position = beeRestricted.transform.position;
                 beeRestricted.GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
-
+                beeRestricted.GetComponent<TouchScript.Behaviors.Transformer>().enabled = true;
               }
 
               //  disable pellet collider
