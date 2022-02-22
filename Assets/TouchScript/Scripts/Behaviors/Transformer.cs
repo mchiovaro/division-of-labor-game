@@ -188,36 +188,54 @@ namespace TouchScript.Behaviors
         private int player_type; //0 = restricted, 1 = free
         private float SPRITE_WIDTH;
 
+        // create barriers (let the player enter the cell a little (0.8f) so they can be in touch with the pellet to grab it)
+        public float barrier_right, barrier_left, barrier_top, barrier_bottom, barrier_drop, barrier_spawn, field_top, field_bottom;
+
         private void Start()
         {
-          //Debug.Log("game object tag = " + gameObject.tag);
-
-          //bee_restrict = transform.Find("player_blue").gameObject;
-          //bee_free = transform.Find("player_green").gameObject;
 
           // find conditions
           exitappscript = FindObjectOfType<Exit_app_script>();
           ie_cond = exitappscript.ie_condition;
           //Debug.Log("Transformer.cs exit app ie_condition = " + ie_cond);
 
-            // find the cells
-            work_row = GameObject.FindGameObjectWithTag("work_row_middle");
-            //work_cell_top = GameObject.FindGameObjectWithTag("work_cell_top");
-            //work_cell_bottom = GameObject.FindGameObjectWithTag("work_cell_bottom");
-            drop_cells = GameObject.FindGameObjectWithTag("drop_cells");
-            spawn_cells = GameObject.FindGameObjectWithTag("spawn_cells");
+          // find the cells
+          work_row = GameObject.FindGameObjectWithTag("work_row_middle");
+          drop_cells = GameObject.FindGameObjectWithTag("drop_cells");
+          spawn_cells = GameObject.FindGameObjectWithTag("spawn_cells");
 
-            // set the starting sides they're coming from
-            if (transform.position.x < 0)
-            {
-                from_where = FROM_LEFT;
-            }
-            else
-            {
-                from_where = FROM_RIGHT;
-            }
+          // create barriers (let the player enter the cell a little (0.8f) so they can be in touch with the pellet to grab it)
+          barrier_right = work_row.transform.GetChild(0).position.x + 0.8f;
+          barrier_left = work_row.transform.GetChild(0).position.x - 0.8f;
 
-            SPRITE_WIDTH = GetComponent<SpriteRenderer>().sprite.bounds.size.x;
+          // these are the top and bottom barrier of the work cells (a little smaller passage because they don't need to intercept the pellets in this area)
+          barrier_top = work_row.transform.GetChild(0).position.y + 0.8f;
+          barrier_bottom = work_row.transform.GetChild(7).position.y - 0.8f;
+
+          // drop and spawn barriers
+          barrier_drop = drop_cells.transform.position.x + 0.8f + .27f;
+          Debug.Log("barrier_drop = " + drop_cells.transform.GetChild(0).position.x);
+          barrier_spawn = spawn_cells.transform.GetChild(0).position.x - 0.8f;
+
+          // field barriers (y coord comes from middle so +/- 0.3 means a 0.2 overlap, the same as left/right)
+          field_top = drop_cells.transform.GetChild(0).position.y + 0.3f;
+          field_bottom = drop_cells.transform.GetChild(9).position.y - 0.3f;
+
+          Debug.Log("barrier_right = " + barrier_right + " barrier_left = " + barrier_left + " barrier_top = " + barrier_top + " barrier_bottom = " + barrier_bottom + " field_top = " + field_top + " field_bottom = " + field_bottom);
+
+          // set the starting sides they're coming from
+          if (transform.position.x < 0)
+          {
+              from_where = FROM_LEFT;
+              //Debug.Log("COMING FROM LEFT START");
+          }
+          else
+          {
+              from_where = FROM_RIGHT;
+              //Debug.Log("COMING FROM RIGHT START");
+          }
+
+          SPRITE_WIDTH = GetComponent<SpriteRenderer>().sprite.bounds.size.x;
 
         }
 
@@ -383,13 +401,56 @@ namespace TouchScript.Behaviors
 
         private void applyValues()
         {
+            Debug.Log("targetposition = " + targetPosition);
             if ((transformMask & TransformGesture.TransformType.Scaling) != 0) cachedTransform.localScale = targetScale;
             if ((transformMask & TransformGesture.TransformType.Rotation) != 0) cachedTransform.rotation = targetRotation;
-            if ((transformMask & TransformGesture.TransformType.Translation) != 0) cachedTransform.position = targetPosition;
             if ((transformMask & TransformGesture.TransformType.Translation) != 0)
             {
+              // if they are in the bounds
+              //Debug.Log(targetPosition);
+              //cachedTransform.position = targetPosition;
 
+              // identify which side they're coming from
+              if (targetPosition.x < 0)
+              {
+                  from_where = FROM_LEFT;
+                  //Debug.Log("COMING FROM LEFT");
+              }
+              else if (targetPosition.x > 0)
+              {
+                  from_where = FROM_RIGHT;
+                  //Debug.Log("COMING FROM RIGHT");
+              }
+              else
+              {
+                from_where = 0;
+              }
+              //cachedTransform.position = targetPosition;
+              // if they're within the play field
+              if //((targetPosition.x > barrier_drop)
+                  (// (targetPosition.x < barrier_spawn)
+                   //(targetPosition.y > field_bottom)
+                //  && (targetPosition.y < field_top)
+                  // if they're not intercepting the middle row
+                !(targetPosition.x > barrier_left &&
+                       targetPosition.x < barrier_right)
+                      // targetPosition.y > barrier_bottom
+                  //      && targetPosition.y < barrier_top))
+                        )
+                  {
+                    Debug.Log("IN BOUNDS");
+                    cachedTransform.position = targetPosition;
+                    //checkBoundaries();
+                  }
+
+              // if they are passing a boundary
+              else {
+                Debug.Log("Intercepting!!");
                 checkBoundaries();
+              }
+
+              //checkBoundaries();
+
             }
 
             transformMask = TransformGesture.TransformType.None;
@@ -428,10 +489,15 @@ namespace TouchScript.Behaviors
         // set up standard boundaries for playing field (ie_condition boundaries set in BeeTap.cs)
         private void checkBoundaries()
         {
+
+            //Debug.Log("targetposition.x = " + targetPosition.x);
+            //cachedTransform.position = targetPosition;
             // create target placeholder
             Vector3 targetPosition2 = targetPosition;
 
-            // create barriers (let the player enter the cell a little (0.8f) so they can be in touch with the pellet to grab it)
+            //Debug.Log("CHECKING BOUNDARIES");
+
+/*            // create barriers (let the player enter the cell a little (0.8f) so they can be in touch with the pellet to grab it)
             float barrier_right = work_row.transform.GetChild(0).position.x + 0.8f;
             float barrier_left = work_row.transform.GetChild(0).position.x - 0.8f;
 
@@ -446,37 +512,45 @@ namespace TouchScript.Behaviors
             // field barriers (y coord comes from middle so +/1 0.3 means a 0.2 overlap, the same as left/right)
             float field_top = drop_cells.transform.GetChild(0).position.y + 0.3f;
             float field_bottom = drop_cells.transform.GetChild(9).position.y - 0.3f;
+*/
+
+            //float barrier_spawn = spawn_cells.transform.GetChild(0).position.x - 0.3f;
 
             // SPAWN and DROP: don't allow any passing
-            if (targetPosition.x < barrier_drop) targetPosition2.x = barrier_drop;
-            if (targetPosition.x > barrier_spawn) targetPosition2.x = barrier_spawn;
+            //if (targetPosition.x < barrier_drop) targetPosition.x = barrier_drop;
+            //Debug.Log("barrier_spawn = " + barrier_spawn);
+            //Debug.Log("spawn_cells.transform.GetChild(0).position.x = " + spawn_cells.transform.GetChild(0).position.x);
 
+            if (targetPosition.x > barrier_spawn) targetPosition2.x = barrier_spawn;
+            if (targetPosition.x < barrier_drop) targetPosition.x = barrier_drop;
+
+            //Debug.Log("HITTING");
             // TOP and BOTTOM: don't allow any passing
-            if (targetPosition.y < field_bottom) targetPosition2.y = field_bottom;
-            if (targetPosition.y > field_top) targetPosition2.y = field_top;
+            if (targetPosition.y < field_bottom) targetPosition.y = field_bottom;
+            if (targetPosition.y > field_top) targetPosition.y = field_top;
 
             //WORK ROW: if they are coming from the right and they are within the two barriers, block them                                   // add a little room so they can overlap
             if (from_where == FROM_RIGHT && targetPosition.x < barrier_right && targetPosition.y < barrier_top && targetPosition.y > barrier_bottom)
             {
                 targetPosition2.x = barrier_right;
+                //Debug.Log("barrier_right = " + barrier_right);
+                //Debug.Log("HITTING");
+                //cachedTransform.position = targetPosition2;
             }
             //WORK ROW: if they are coming from the left and they are within the two barriers, block them                                     // add a little room so they can overlap
-            else if (from_where == FROM_LEFT && targetPosition.x > barrier_left && targetPosition.y < barrier_top && targetPosition.y > barrier_bottom)
+            if (from_where == FROM_LEFT && targetPosition.x > barrier_left && targetPosition.y < barrier_top && targetPosition.y > barrier_bottom)
             {
                 targetPosition2.x = barrier_left;
+                //Debug.Log("FROM LEFT");
+                //cachedTransform.position = targetPosition2;
             }
 
-            cachedTransform.position = targetPosition2;
 
-            // identify which side they're coming from
-            if (targetPosition2.x < 0)
-            {
-                from_where = FROM_LEFT;
-            }
-            else
-            {
-                from_where = FROM_RIGHT;
-            }
+            // if they are not hitting a boundary, let them go!
+            targetPosition.x = targetPosition2.x;
+            cachedTransform.position = targetPosition;
+            //cachedTransform.position = targetPosition;
+            //Debug.Log("NOT HITTING!!!!!!!");
 
         }
 

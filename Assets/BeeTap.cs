@@ -56,6 +56,8 @@ public class BeeTap : MonoBehaviour
       beeFree = GameObject.FindGameObjectWithTag("bee_free");
       beeRestrict = GameObject.FindGameObjectWithTag("bee_restricted");
 
+      //Debug.Log("position = " + GameObject.Find("player_blue").transform.position.x);
+
       checkBoundaries();
     }
 
@@ -107,6 +109,16 @@ public class BeeTap : MonoBehaviour
         // let the player enter the cell a little (0.8f) so they can be in touch with the pellet to grab it
         float barrier_right = work_row.transform.GetChild(0).position.x + 0.8f;
         float barrier_left = work_row.transform.GetChild(0).position.x - 0.8f;
+
+        // field barriers (y coord comes from middle so +/1 0.3 means a 0.2 overlap, the same as left/right)
+        float field_top = drop_cells.transform.GetChild(0).position.y + 0.3f;
+        float field_bottom = drop_cells.transform.GetChild(9).position.y - 0.3f;
+
+        //if (gameObject.tranform.position.y < field_bottom) gameObject.transform.position.y = field_bottom;
+        if (GameObject.Find("player_blue").transform.position.y < field_bottom) {
+               //GameObject.Find("player_blue").transform.position = new Vector3(GameObject.Find("player_blue").transform.position.x, field_bottom, GameObject.Find("player_blue").transform.position.z);
+         }
+
 
         // if ie_condition = 1, block restricted player and allow free player to pass.
         if (ie_cond == 1) {
