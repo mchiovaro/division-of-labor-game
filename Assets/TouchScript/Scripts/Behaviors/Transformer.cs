@@ -401,13 +401,13 @@ namespace TouchScript.Behaviors
 
         private void applyValues()
         {
-            Debug.Log("targetposition = " + targetPosition);
+            //Debug.Log("targetposition = " + targetPosition);
             if ((transformMask & TransformGesture.TransformType.Scaling) != 0) cachedTransform.localScale = targetScale;
             if ((transformMask & TransformGesture.TransformType.Rotation) != 0) cachedTransform.rotation = targetRotation;
             if ((transformMask & TransformGesture.TransformType.Translation) != 0)
             {
               // if they are in the bounds
-              //Debug.Log(targetPosition);
+              Debug.Log("PRINTING");
               //cachedTransform.position = targetPosition;
 
               // identify which side they're coming from
@@ -517,14 +517,9 @@ namespace TouchScript.Behaviors
             //float barrier_spawn = spawn_cells.transform.GetChild(0).position.x - 0.3f;
 
             // SPAWN and DROP: don't allow any passing
-            //if (targetPosition.x < barrier_drop) targetPosition.x = barrier_drop;
-            //Debug.Log("barrier_spawn = " + barrier_spawn);
-            //Debug.Log("spawn_cells.transform.GetChild(0).position.x = " + spawn_cells.transform.GetChild(0).position.x);
-
             if (targetPosition.x > barrier_spawn) targetPosition2.x = barrier_spawn;
             if (targetPosition.x < barrier_drop) targetPosition.x = barrier_drop;
 
-            //Debug.Log("HITTING");
             // TOP and BOTTOM: don't allow any passing
             if (targetPosition.y < field_bottom) targetPosition.y = field_bottom;
             if (targetPosition.y > field_top) targetPosition.y = field_top;
@@ -540,7 +535,7 @@ namespace TouchScript.Behaviors
             //WORK ROW: if they are coming from the left and they are within the two barriers, block them                                     // add a little room so they can overlap
             if (from_where == FROM_LEFT && targetPosition.x > barrier_left && targetPosition.y < barrier_top && targetPosition.y > barrier_bottom)
             {
-                targetPosition2.x = barrier_left;
+                //targetPosition2.x = barrier_left;
                 //Debug.Log("FROM LEFT");
                 //cachedTransform.position = targetPosition2;
             }

@@ -107,23 +107,53 @@ public class BeeTap : MonoBehaviour
     {
         // create barriers for left and right of work cells
         // let the player enter the cell a little (0.8f) so they can be in touch with the pellet to grab it
-        float barrier_right = work_row.transform.GetChild(0).position.x + 0.8f;
-        float barrier_left = work_row.transform.GetChild(0).position.x - 0.8f;
+        float barrier_right = work_row.transform.position.x + 0.8f;
+        float barrier_left = work_row.transform.position.x - 0.8f;
+        float barrier_top = 3.77f + .5f;
+        float barrier_bottom = -3.77f - .5f;
 
-        // field barriers (y coord comes from middle so +/1 0.3 means a 0.2 overlap, the same as left/right)
-        float field_top = drop_cells.transform.GetChild(0).position.y + 0.3f;
-        float field_bottom = drop_cells.transform.GetChild(9).position.y - 0.3f;
+        Debug.Log(barrier_top + " " + barrier_bottom);
 
-        //if (gameObject.tranform.position.y < field_bottom) gameObject.transform.position.y = field_bottom;
-        if (GameObject.Find("player_blue").transform.position.y < field_bottom) {
-               //GameObject.Find("player_blue").transform.position = new Vector3(GameObject.Find("player_blue").transform.position.x, field_bottom, GameObject.Find("player_blue").transform.position.z);
-         }
+        // field barriers
+        float field_top = 5.15f;
+        float field_bottom = -5.15f;
+        float field_right = spawn_cells.transform.position.x - 0.8f;
+        float field_left = drop_cells.transform.position.x + 0.8f + .5f;
+
+        //Debug.Log(drop_cells.transform.GetChild(0).position.x);
+
+        //if they are hitting the bottom, kick them back
+        if (GameObject.Find("player_blue").transform.position.y < field_bottom)
+          GameObject.Find("player_blue").transform.position = new Vector3(GameObject.Find("player_blue").transform.position.x, field_bottom, GameObject.Find("player_blue").transform.position.z);
+        if (GameObject.Find("player_red").transform.position.y < field_bottom)
+          GameObject.Find("player_red").transform.position = new Vector3(GameObject.Find("player_red").transform.position.x, field_bottom, GameObject.Find("player_red").transform.position.z);
+
+        //if they are hitting the top, kick them back
+        if (GameObject.Find("player_blue").transform.position.y > field_top)
+          GameObject.Find("player_blue").transform.position = new Vector3(GameObject.Find("player_blue").transform.position.x, field_top, GameObject.Find("player_blue").transform.position.z);
+        if (GameObject.Find("player_red").transform.position.y > field_top)
+          GameObject.Find("player_red").transform.position = new Vector3(GameObject.Find("player_red").transform.position.x, field_top, GameObject.Find("player_red").transform.position.z);
+
+        //if they are hitting the left, kick them back
+        if (GameObject.Find("player_blue").transform.position.x < field_left)
+          GameObject.Find("player_blue").transform.position = new Vector3(field_left, GameObject.Find("player_blue").transform.position.y, GameObject.Find("player_blue").transform.position.z);
+        if (GameObject.Find("player_red").transform.position.x < field_left)
+          GameObject.Find("player_red").transform.position = new Vector3(field_left, GameObject.Find("player_red").transform.position.y, GameObject.Find("player_red").transform.position.z);
+
+        //if they are hitting the right, kick them back
+        if (GameObject.Find("player_blue").transform.position.x > field_right)
+          GameObject.Find("player_blue").transform.position = new Vector3(field_right, GameObject.Find("player_blue").transform.position.y, GameObject.Find("player_blue").transform.position.z);
+        if (GameObject.Find("player_red").transform.position.x > field_right)
+          GameObject.Find("player_red").transform.position = new Vector3(field_right, GameObject.Find("player_red").transform.position.y, GameObject.Find("player_red").transform.position.z);
 
 
+
+
+/*
         // if ie_condition = 1, block restricted player and allow free player to pass.
         if (ie_cond == 1) {
            // if the restricted player hits the boundary, don't allow them to pass.
-           if (GameObject.Find("player_blue").transform.position.x < barrier_right) {
+           if (GameObject.Find("player_blue").transform.position.x <  barrier_right) {
                   GameObject.Find("player_blue").transform.position = new Vector3(barrier_right, GameObject.Find("player_blue").transform.position.y, GameObject.Find("player_blue").transform.position.z);
             }
         }
@@ -134,7 +164,7 @@ public class BeeTap : MonoBehaviour
            if (GameObject.Find("player_red").transform.position.x > barrier_left) {
                   GameObject.Find("player_red").transform.position = new Vector3(barrier_left, GameObject.Find("player_red").transform.position.y, GameObject.Find("player_red").transform.position.z);
             }
-        }
+        } */
 
     }
 
