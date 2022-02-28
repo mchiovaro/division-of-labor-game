@@ -66,8 +66,9 @@ public class DropCellScript : MonoBehaviour
 
                 if(dropTapCounter == 2)
                 {
+                    // set the offset to drop the pellet in the back
                     float offset = 5.4f / 10;
-
+                    // if there is not pellet yet, drop it in the back
                     if (pelletCounter == 0)
                         offset *= -1;
 

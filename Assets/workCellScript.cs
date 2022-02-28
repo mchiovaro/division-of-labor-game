@@ -17,12 +17,9 @@ public class workCellScript : MonoBehaviour
     private bool restrict_contact_cell = false;
     public bool advanced_pellet;
     public bool contact_on = false;
+    public int dropTapCounter = 0;
 
     public Dictionary<string, bool> my_colliders = new Dictionary<string, bool>() {
-        { "bee_free", false }, { "bee_restricted", false }};
-
-    // do we need this since we have grabbed_on?
-    public Dictionary<string, bool> carrying_pellet = new Dictionary<string, bool>() {
         { "bee_free", false }, { "bee_restricted", false }};
 
     private void Start()
@@ -97,14 +94,17 @@ public class workCellScript : MonoBehaviour
           Debug.Log(collider_.gameObject.tag + " moved away from work cell");
         }
 
+        dropTapCounter = 0;
+
     }
 
     //this happens when the cell is tapped
     private void tappedHandler2(object sender, EventArgs eventArgs)
     {
-        Debug.Log("TAPPED");
+        //Debug.Log("TAPPED");
+        dropTapCounter++;
         //if restricted player has a pellet and is in contact with the cell
-        if (pellet_ != null && restrict_contact_cell == true)
+        if (pellet_ != null && restrict_contact_cell == true && dropTapCounter == 2)
         {
 
             pellet_.GetComponent<PelletScript>().saveToBuffer("2_DROP_MID");
@@ -126,12 +126,15 @@ public class workCellScript : MonoBehaviour
             beeRestricted.GetComponent<SpriteRenderer>().color = Color.blue;
 
             //young bee can't move again until pellet has been fully worked
-            if (!pellet_.GetComponent<PelletScript>().worked)
-                beeRestricted.GetComponent<TouchScript.Behaviors.Transformer>().enabled = false;
+            //if (!pellet_.GetComponent<PelletScript>().worked)
+            //    beeRestricted.GetComponent<TouchScript.Behaviors.Transformer>().enabled = false;
+
+            // reset dropping taps to 0
+            dropTapCounter = 0;
         }
 
         //if free player has a pellet and is in contact with the cell
-        if (pellet_ != null && free_contact_cell == true)
+        if (pellet_ != null && free_contact_cell == true && dropTapCounter == 2)
         {
 
             pellet_.GetComponent<PelletScript>().saveToBuffer("1_DROP_MID");
@@ -153,13 +156,16 @@ public class workCellScript : MonoBehaviour
             beeFree.GetComponent<SpriteRenderer>().color = Color.red;
 
             // free bee can't move again until pellet has been fully worked
-            if (!pellet_.GetComponent<PelletScript>().worked)
-                beeFree.GetComponent<TouchScript.Behaviors.Transformer>().enabled = false;
+            //if (!pellet_.GetComponent<PelletScript>().worked)
+            //    beeFree.GetComponent<TouchScript.Behaviors.Transformer>().enabled = false;
+
+            // reset dropping taps to 0
+            dropTapCounter = 0;
         }
 
     }
 
-    // where does this get called in?
+    // called from Exit_app_script
     public void resetParameters()
     {
         //contact_on = false;
@@ -168,8 +174,6 @@ public class workCellScript : MonoBehaviour
         Debug.Log("workCellScript contact set to FALSE");
         my_colliders["bee_free"] = false;
         my_colliders["bee_restricted"] = false;
-        carrying_pellet["bee_free"] = false;
-        carrying_pellet["bee_restricted"] = false;
 
     }
 }
