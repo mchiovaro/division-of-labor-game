@@ -41,7 +41,7 @@ public class PelletScript : MonoBehaviour
     Collider2D[] spawn_cell;
 
     // CONDITION: Change this number for the number of taps for bee free
-    private float process_rate = 1.0f/2;
+    private float process_rate = 1.0f/5;
 
     // starting size of the yellow disk
     float scale_size = 0;
@@ -136,7 +136,7 @@ public class PelletScript : MonoBehaviour
 
       // set the sequence based on td_cond for this round
       if(td_cond[round_num] == 1 || td_cond[round_num] == 4)CORRECT_SEQUENCE = seq_1;
-      if(td_cond[round_num] == 2 || td_cond[round_num] == 5 )CORRECT_SEQUENCE = seq_2;
+      if(td_cond[round_num] == 2 || td_cond[round_num] == 5)CORRECT_SEQUENCE = seq_2;
       if(td_cond[round_num] == 3 || td_cond[round_num] == 6)CORRECT_SEQUENCE = seq_3;
     }
 
