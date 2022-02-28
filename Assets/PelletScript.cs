@@ -23,9 +23,7 @@ public class PelletScript : MonoBehaviour
     public bool free_contact_on = false;
     public bool restrict_contact_on = false;
     public bool advanced_pellet = false;
-    //public int FROM_LEFT, FROM_RIGHT, from_where;
     private int left = 1, right = -1, from = 0;
-    //public bool pellet_in_workCell = false;
     public bool pellet_in_spawnCell = false;
     public bool worked = false;
     public Collider2D player_coll;
@@ -173,10 +171,12 @@ public class PelletScript : MonoBehaviour
         {
             from = left;
             //Debug.Log("coming from left");
+            Debug.Log("FROM = " + from);
         }
         else
         {
             from = right;
+            Debug.Log("FROM = " + from);
             //Debug.Log("coming from right");
         }
       }
@@ -350,9 +350,10 @@ public class PelletScript : MonoBehaviour
     {
 
         // if bee_free is touching the pellet and not grabbing anything
-        if((free_contact_on == true && restrict_contact_on == false) || (restrict_contact_on == true && free_contact_on == false) && from == left)
+        if(((free_contact_on == true && restrict_contact_on == false) || (restrict_contact_on == true && free_contact_on == false)) && from == left)
         {
 
+          //
           // identify who is trying to grab the pellet
           if(free_contact_on == true && restrict_contact_on == false)
           {

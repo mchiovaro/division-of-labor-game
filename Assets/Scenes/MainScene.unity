@@ -1716,6 +1716,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   advanced_pellet: 0
   contact_on: 0
+  dropTapCounter: 0
 --- !u!61 &395547875
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2521,6 +2522,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   advanced_pellet: 0
   contact_on: 0
+  dropTapCounter: 0
 --- !u!61 &634811609
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2927,6 +2929,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   advanced_pellet: 0
   contact_on: 0
+  dropTapCounter: 0
 --- !u!61 &710552599
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5712,6 +5715,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   advanced_pellet: 0
   contact_on: 0
+  dropTapCounter: 0
 --- !u!61 &1509793699
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6205,6 +6209,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   advanced_pellet: 0
   contact_on: 0
+  dropTapCounter: 0
 --- !u!61 &1549879268
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6990,6 +6995,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   advanced_pellet: 0
   contact_on: 0
+  dropTapCounter: 0
 --- !u!61 &1816218189
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7128,16 +7134,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1886801544}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 591218157}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 10}
   m_SizeDelta: {x: 1000, y: 1000}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1886801546
@@ -7553,6 +7559,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   advanced_pellet: 0
   contact_on: 0
+  dropTapCounter: 0
 --- !u!61 &2034737657
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7884,6 +7891,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   advanced_pellet: 0
   contact_on: 0
+  dropTapCounter: 0
 --- !u!61 &2056853958
 BoxCollider2D:
   m_ObjectHideFlags: 0
