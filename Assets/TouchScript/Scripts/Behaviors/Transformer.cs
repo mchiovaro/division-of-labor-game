@@ -172,7 +172,7 @@ namespace TouchScript.Behaviors
         Exit_app_script exitappscript;
 
         // define our objects
-        GameObject work_row, drop_cells, spawn_cells;
+        GameObject work_row;
         const int BEE_FREE = 1;
         const int BEE_RESTRICTED = 0;
 
@@ -197,31 +197,15 @@ namespace TouchScript.Behaviors
           // find conditions
           exitappscript = FindObjectOfType<Exit_app_script>();
           ie_cond = exitappscript.ie_condition;
-          //Debug.Log("Transformer.cs exit app ie_condition = " + ie_cond);
 
           // find the cells
           work_row = GameObject.FindGameObjectWithTag("work_row_middle");
-          drop_cells = GameObject.FindGameObjectWithTag("drop_cells");
-          spawn_cells = GameObject.FindGameObjectWithTag("spawn_cells");
 
-          // create barriers (let the player enter the cell a little (0.8f) so they can be in touch with the pellet to grab it)
-          barrier_right = work_row.transform.GetChild(0).position.x + 0.8f;
-          barrier_left = work_row.transform.GetChild(0).position.x - 0.8f;
-
-          // these are the top and bottom barrier of the work cells (a little smaller passage because they don't need to intercept the pellets in this area)
-          barrier_top = work_row.transform.GetChild(0).position.y + 0.8f;
-          barrier_bottom = work_row.transform.GetChild(7).position.y - 0.8f;
-
-          // drop and spawn barriers
-          barrier_drop = drop_cells.transform.position.x + 0.8f + .27f;
-          Debug.Log("barrier_drop = " + drop_cells.transform.GetChild(0).position.x);
-          barrier_spawn = spawn_cells.transform.GetChild(0).position.x - 0.8f;
-
-          // field barriers (y coord comes from middle so +/- 0.3 means a 0.2 overlap, the same as left/right)
-          field_top = drop_cells.transform.GetChild(0).position.y + 0.3f;
-          field_bottom = drop_cells.transform.GetChild(9).position.y - 0.3f;
-
-          Debug.Log("barrier_right = " + barrier_right + " barrier_left = " + barrier_left + " barrier_top = " + barrier_top + " barrier_bottom = " + barrier_bottom + " field_top = " + field_top + " field_bottom = " + field_bottom);
+          // create barriers (let the player enter the cell a little so they can be in touch with the pellet to grab it)
+          barrier_right = work_row.transform.position.x + 0.8f;
+          barrier_left = work_row.transform.position.x - 0.8f;
+          barrier_top = 3.77f + .5f;
+          barrier_bottom = -3.77f - .5f;
 
           // set the starting sides they're coming from
           if (transform.position.x < 0)
@@ -406,9 +390,6 @@ namespace TouchScript.Behaviors
             if ((transformMask & TransformGesture.TransformType.Rotation) != 0) cachedTransform.rotation = targetRotation;
             if ((transformMask & TransformGesture.TransformType.Translation) != 0)
             {
-              // if they are in the bounds
-              Debug.Log("PRINTING");
-              //cachedTransform.position = targetPosition;
 
               // identify which side they're coming from
               if (targetPosition.x < 0)
@@ -425,31 +406,9 @@ namespace TouchScript.Behaviors
               {
                 from_where = 0;
               }
-              //cachedTransform.position = targetPosition;
-              // if they're within the play field
-              if //((targetPosition.x > barrier_drop)
-                  (// (targetPosition.x < barrier_spawn)
-                   //(targetPosition.y > field_bottom)
-                //  && (targetPosition.y < field_top)
-                  // if they're not intercepting the middle row
-                !(targetPosition.x > barrier_left &&
-                       targetPosition.x < barrier_right)
-                      // targetPosition.y > barrier_bottom
-                  //      && targetPosition.y < barrier_top))
-                        )
-                  {
-                    Debug.Log("IN BOUNDS");
-                    cachedTransform.position = targetPosition;
-                    //checkBoundaries();
-                  }
 
-              // if they are passing a boundary
-              else {
-                Debug.Log("Intercepting!!");
-                checkBoundaries();
-              }
+              checkBoundaries();
 
-              //checkBoundaries();
 
             }
 
@@ -490,62 +449,23 @@ namespace TouchScript.Behaviors
         private void checkBoundaries()
         {
 
-            //Debug.Log("targetposition.x = " + targetPosition.x);
-            //cachedTransform.position = targetPosition;
             // create target placeholder
             Vector3 targetPosition2 = targetPosition;
 
-            //Debug.Log("CHECKING BOUNDARIES");
-
-/*            // create barriers (let the player enter the cell a little (0.8f) so they can be in touch with the pellet to grab it)
-            float barrier_right = work_row.transform.GetChild(0).position.x + 0.8f;
-            float barrier_left = work_row.transform.GetChild(0).position.x - 0.8f;
-
-            // these are the top and bottom barrier of the work cells (a little smaller passage because they don't need to intercept the pellets in this area)
-            float barrier_top = work_row.transform.GetChild(0).position.y + 0.8f;
-            float barrier_bottom = work_row.transform.GetChild(7).position.y - 0.8f;
-
-            // drop and spawn barriers
-            float barrier_drop = drop_cells.transform.GetChild(0).position.x + 0.8f + 0.5f;
-            float barrier_spawn = spawn_cells.transform.GetChild(0).position.x - 0.8f;
-
-            // field barriers (y coord comes from middle so +/1 0.3 means a 0.2 overlap, the same as left/right)
-            float field_top = drop_cells.transform.GetChild(0).position.y + 0.3f;
-            float field_bottom = drop_cells.transform.GetChild(9).position.y - 0.3f;
-*/
-
-            //float barrier_spawn = spawn_cells.transform.GetChild(0).position.x - 0.3f;
-
-            // SPAWN and DROP: don't allow any passing
-            if (targetPosition.x > barrier_spawn) targetPosition2.x = barrier_spawn;
-            if (targetPosition.x < barrier_drop) targetPosition.x = barrier_drop;
-
-            // TOP and BOTTOM: don't allow any passing
-            if (targetPosition.y < field_bottom) targetPosition.y = field_bottom;
-            if (targetPosition.y > field_top) targetPosition.y = field_top;
-
-            //WORK ROW: if they are coming from the right and they are within the two barriers, block them                                   // add a little room so they can overlap
+            //WORK ROW: if they are coming from the right and they are within the two barriers, block them
             if (from_where == FROM_RIGHT && targetPosition.x < barrier_right && targetPosition.y < barrier_top && targetPosition.y > barrier_bottom)
             {
                 targetPosition2.x = barrier_right;
-                //Debug.Log("barrier_right = " + barrier_right);
-                //Debug.Log("HITTING");
-                //cachedTransform.position = targetPosition2;
             }
-            //WORK ROW: if they are coming from the left and they are within the two barriers, block them                                     // add a little room so they can overlap
+            //WORK ROW: if they are coming from the left and they are within the two barriers, block them
             if (from_where == FROM_LEFT && targetPosition.x > barrier_left && targetPosition.y < barrier_top && targetPosition.y > barrier_bottom)
             {
-                //targetPosition2.x = barrier_left;
-                //Debug.Log("FROM LEFT");
-                //cachedTransform.position = targetPosition2;
+              targetPosition2.x = barrier_left;
             }
 
-
-            // if they are not hitting a boundary, let them go!
+            // update position and add to cachedTransform
             targetPosition.x = targetPosition2.x;
             cachedTransform.position = targetPosition;
-            //cachedTransform.position = targetPosition;
-            //Debug.Log("NOT HITTING!!!!!!!");
 
         }
 

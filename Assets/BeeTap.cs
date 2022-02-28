@@ -112,9 +112,7 @@ public class BeeTap : MonoBehaviour
         float barrier_top = 3.77f + .5f;
         float barrier_bottom = -3.77f - .5f;
 
-        Debug.Log(barrier_top + " " + barrier_bottom);
-
-        // field barriers
+        // set field barriers
         float field_top = 5.15f;
         float field_bottom = -5.15f;
         float field_right = spawn_cells.transform.position.x - 0.8f;
@@ -146,10 +144,6 @@ public class BeeTap : MonoBehaviour
         if (GameObject.Find("player_red").transform.position.x > field_right)
           GameObject.Find("player_red").transform.position = new Vector3(field_right, GameObject.Find("player_red").transform.position.y, GameObject.Find("player_red").transform.position.z);
 
-
-
-
-/*
         // if ie_condition = 1, block restricted player and allow free player to pass.
         if (ie_cond == 1) {
            // if the restricted player hits the boundary, don't allow them to pass.
@@ -164,7 +158,7 @@ public class BeeTap : MonoBehaviour
            if (GameObject.Find("player_red").transform.position.x > barrier_left) {
                   GameObject.Find("player_red").transform.position = new Vector3(barrier_left, GameObject.Find("player_red").transform.position.y, GameObject.Find("player_red").transform.position.z);
             }
-        } */
+        }
 
     }
 
