@@ -135,7 +135,7 @@ public class Exit_app_script : MonoBehaviour
         float ratio = 108 / ScToWRatio - Camera.main.orthographicSize + 108 / (2 * ScToWRatio);
 
         // check to see what the communication condition is and create communication buttons if condition 2
-        if(com_condition == 1){
+        if(com_condition == 2){
           buttons.SetActive(true);
           messageboxes.SetActive(true);
         }
