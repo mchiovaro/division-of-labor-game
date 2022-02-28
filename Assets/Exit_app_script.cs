@@ -14,7 +14,7 @@ public class Exit_app_script : MonoBehaviour
     public string RA_initials;
 
     // max number of pellets based on number of cells available
-    private const int MAX_PELLETS = 20;
+    private const int MAX_PELLETS = 10;
 
     // initialize conditions variables
     public List<int> td_condition = new List<int>(7);
@@ -27,6 +27,7 @@ public class Exit_app_script : MonoBehaviour
     private const int CONDITION_EXPERIMENT_OVER = 0;
 
     // conditions for task demand
+    public const int PRACTICE = 0;
     public const int FREE_HARD = 1;
     public const int RESTRICT_HARD = 2;
     public const int BOTH_HARD = 3;
@@ -106,7 +107,7 @@ public class Exit_app_script : MonoBehaviour
 
         // set up practice screen
         ui_image.enabled = true;
-        ui_text.text = "Ready to practice?";
+        ui_text.text = "Red player: Condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
 
         //allocate memory for Data to save
         data_beeFree.allPositions = new List<Vector3>(100000); // old bee
@@ -179,9 +180,6 @@ public class Exit_app_script : MonoBehaviour
                     GameObject pel_ = Instantiate(foodPrefab, spawn_cells.transform.GetChild(avail_spawn[rand_ini]).position, Quaternion.identity);
                     pel_.GetComponent<PelletScript>().pelletID = current_spawn - 1;
 
-                    if (!practice_mode) {
-                        //pel_.GetComponent<PelletScript>().saveToBuffer("SPAWN");
-                    }
                 }
             }
 
@@ -229,7 +227,7 @@ public class Exit_app_script : MonoBehaviour
     private void FixedUpdate()
     {
         // save data only for real trials and only while running
-        if (running_)
+        if (running_ && practice_mode == false)
         {
             // set up saving location
             string filetitle = "" + ParticipantNumber;
@@ -271,8 +269,6 @@ public class Exit_app_script : MonoBehaviour
         if (dropped_pellets.Count == MAX_PELLETS)
         {
             running_ = false;
-            round_number++;
-            Debug.Log("round_number = " + round_number);
 
             // clear pellet data
             dropped_pellets.Clear();
@@ -309,13 +305,18 @@ public class Exit_app_script : MonoBehaviour
                 spawn_cells.transform.GetChild(ii).GetComponent<SpawnCellScript>().contact_on = false;
             }
 
+            // if it wasn't the practice round, play again
+            if(!practice_mode){
+              round_number++;
+              Debug.Log("round_number = " + round_number);
+            }
+
             // if this was the practice round, set to false (if more attempts are needed, for now they just restart game)
             if (practice_mode){
                 practice_mode = false;
             }
 
-            // set waiting screen with td_condition prompt for bee_free
-            checkCondition();
+            checkCondition(); // set waiting screen with td_condition prompt for bee_free
 
             // clear pellet data
             for (int ii = 0; ii < MAX_PELLETS; ii++)
@@ -372,70 +373,6 @@ public class Exit_app_script : MonoBehaviour
 
     }
 
-    // save pellet data here at Update() rate, not FixedUpdate()
-/*    void saveToDisk()
-    {
-
-        string filetitle = RA_initials + "-" + ParticipantNumber;
-        string path = "Assets/Resources/Data/"+ filetitle + "-pellet_data.csv";
-
-        StreamWriter writer = new StreamWriter(path, true);
-
-        // if this is the first real round
-        if(round_number == 0)
-        {
-            string header_string = "System.DateTime.Now,Time.time,ParticipantNumber,round_number,ie_condition,td_condition,com_condition,size_condition,experiment_num";
-
-            // create column for max number of pellets
-            for (int jj = 0; jj < MAX_PELLETS; jj++)
-                // add a column for each pellet to log events
-                header_string = header_string + "," + jj+"PelletEvent";
-
-            writer.WriteLine(header_string);
-        }
-
-        List<List<string>> all_pell_ev = new List<List<string>>();
-
-        for(int ii = 0; ii< MAX_PELLETS; ii++)
-        {
-            List<string> _pell = new List<string>(new string[data_beeFree.allPositions.Count]);
-            all_pell_ev.Add(_pell);
-
-            for (int frameInd = 0; frameInd < pellData[ii].frameNum.Count; frameInd++)
-            {
-                all_pell_ev[ii][pellData[ii].frameNum[frameInd]] = pellData[ii].pelletEvent[frameInd];
-            }
-
-        }
-
-        // new string for pellet data?
-        List<string> pell_ = new List<string>(new string [data_beeFree.allPositions.Count]);
-
-        for(int ii = 0; ii< pellData[0].frameNum.Count; ii++)
-            pell_[pellData[0].frameNum[ii]] = pellData[0].pelletEvent[ii];
-
-        // save data
-        for (int ii = 0; ii < data_beeFree.allPositions.Count; ii++)
-        {
-            string next_line = System.DateTime.Now + "," + ParticipantNumber + "," + RA_initials + "," + round_number + "," + td_condition[round_number]
-                + "," + data_beeFree.allTimeStamps[ii];
-
-            // This loop is the reason for the duplicate time stamps (I think).
-            // It takes each pellet and creates a line for any pellet event.
-            // If two pellet events happen in the same frame, it will create
-            // two separate lines. We will just need to collapse across duplicate
-            // timestamps to see all pellet events at the moment.
-            for (int jj =0; jj< all_pell_ev.Count; jj++)
-                next_line = next_line + "," + all_pell_ev[jj][ii];
-
-            writer.WriteLine(next_line);
-
-
-        }
-
-        writer.Close();
-    }
-*/
     // grabbing randomization of condition types for trials
     void loadParams()
     {
@@ -449,7 +386,7 @@ public class Exit_app_script : MonoBehaviour
         // create string to split columns of conditions for the row
         string[] col = row[ParticipantNumber].Split(new char[] { ',' });
 
-    // td_condition
+        // td_condition
 
         // increase by 1 until we hit six (FIX: make this 7, one for trial round)
         for (int ii = 2; ii < 8; ii++)
@@ -468,7 +405,7 @@ public class Exit_app_script : MonoBehaviour
         //add the stopping condition at the end
         td_condition.Add(CONDITION_EXPERIMENT_OVER);
 
-    // ie_condition
+        // ie_condition
 
         // create temp variable to hold the condition
         int temp_ie;
@@ -477,7 +414,7 @@ public class Exit_app_script : MonoBehaviour
         int.TryParse(col[1], out temp_ie);
         ie_condition = temp_ie;
 
-    // com_condition
+        // com_condition
 
         // create temp variable to hold the condition
         int temp_com;
@@ -486,7 +423,7 @@ public class Exit_app_script : MonoBehaviour
         int.TryParse(col[8], out temp_com);
         com_condition = temp_com;
 
-    // size_condition: number of participants
+        // size_condition: number of participants
 
         // create temp variable to hold the condition
         int temp_size;
@@ -495,7 +432,7 @@ public class Exit_app_script : MonoBehaviour
         int.TryParse(col[9], out temp_size);
         size_condition = temp_size;
 
-  // experiment_num
+        // experiment_num
 
         // create temp variable to hold the condition
         int temp_exp;

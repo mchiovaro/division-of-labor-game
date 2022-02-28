@@ -87,14 +87,14 @@ public class workCellScript : MonoBehaviour
         if (collider_.tag.Equals("bee_free"))
         {
             free_contact_cell = false;
-            //Debug.Log(collider_.gameObject.tag + " moved away from work cell");
+            Debug.Log(collider_.gameObject.tag + " moved away from work cell");
         }
 
         // if the collider object that moved away was bee restricted, set contact false and give debug message
         if (collider_.tag.Equals("bee_restricted"))
         {
           restrict_contact_cell = false;
-          //Debug.Log(collider_.gameObject.tag + " moved away from work cell");
+          Debug.Log(collider_.gameObject.tag + " moved away from work cell");
         }
 
     }
@@ -102,6 +102,7 @@ public class workCellScript : MonoBehaviour
     //this happens when the cell is tapped
     private void tappedHandler2(object sender, EventArgs eventArgs)
     {
+        Debug.Log("TAPPED");
         //if restricted player has a pellet and is in contact with the cell
         if (pellet_ != null && restrict_contact_cell == true)
         {
