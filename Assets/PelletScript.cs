@@ -350,7 +350,7 @@ public class PelletScript : MonoBehaviour
     {
 
         // if bee_free is touching the pellet and not grabbing anything
-        if(((free_contact_on == true && restrict_contact_on == false) || (restrict_contact_on == true && free_contact_on == false)) && from == left)
+        if(((free_contact_on == true && restrict_contact_on == false && beeFree.GetComponent<BeeTap>().grabbed_on == false) || (restrict_contact_on == true && free_contact_on == false && beeRestricted.GetComponent<BeeTap>().grabbed_on == false)) && from == left)
         {
 
           //
