@@ -84,14 +84,14 @@ public class workCellScript : MonoBehaviour
         if (collider_.tag.Equals("bee_free"))
         {
             free_contact_cell = false;
-            Debug.Log(collider_.gameObject.tag + " moved away from work cell");
+            //Debug.Log(collider_.gameObject.tag + " moved away from work cell");
         }
 
         // if the collider object that moved away was bee restricted, set contact false and give debug message
         if (collider_.tag.Equals("bee_restricted"))
         {
           restrict_contact_cell = false;
-          Debug.Log(collider_.gameObject.tag + " moved away from work cell");
+          //Debug.Log(collider_.gameObject.tag + " moved away from work cell");
         }
 
         dropTapCounter = 0;
@@ -125,10 +125,6 @@ public class workCellScript : MonoBehaviour
             // reset the bee color once they've dropped the pellet
             beeRestricted.GetComponent<SpriteRenderer>().color = Color.blue;
 
-            //young bee can't move again until pellet has been fully worked
-            //if (!pellet_.GetComponent<PelletScript>().worked)
-            //    beeRestricted.GetComponent<TouchScript.Behaviors.Transformer>().enabled = false;
-
             // reset dropping taps to 0
             dropTapCounter = 0;
         }
@@ -154,10 +150,6 @@ public class workCellScript : MonoBehaviour
 
             // reset the bee color once they've dropped the pellet
             beeFree.GetComponent<SpriteRenderer>().color = Color.red;
-
-            // free bee can't move again until pellet has been fully worked
-            //if (!pellet_.GetComponent<PelletScript>().worked)
-            //    beeFree.GetComponent<TouchScript.Behaviors.Transformer>().enabled = false;
 
             // reset dropping taps to 0
             dropTapCounter = 0;
