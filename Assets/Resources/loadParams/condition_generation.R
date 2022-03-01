@@ -15,10 +15,10 @@ set.seed(2022)
 df <- data.frame(matrix(ncol = 12, nrow = 315))
 
 # provide column names
-colnames(df) <- c('group_number', 'ie_condition', 'practice',
+colnames(df) <- c('group_number', 'ie_condition',
                   'td_1', 'td_1', 'td_1', 'td_1', 
                   'td_1', 'td_1', 'com_condition', 
-                  'group_size', 'experiment_number')
+                  'group_size', 'practice', 'experiment_number')
 
 ##### Experiment number #####
 
@@ -42,10 +42,10 @@ for (i in 1:nrow(df)){
     sample <- t(as.data.frame(shuffled))
     
     # fill it into a row
-    df[i, c(4:9)] <- sample
+    df[i, c(3:8)] <- sample
     
     # for each column in that row
-    for (j in 4:9){
+    for (j in 3:8){
       
       # if the value is greater than 3
       if(df[i, j] > 3){
