@@ -54,15 +54,19 @@ public class ButtonTap : MonoBehaviour
       message_free.GetComponent<TMP_Text>().text = "";
       message_restrict.GetComponent<TMP_Text>().text = "";
 
-      // set up the file
-      // set up saving location
-      string path = "Assets/Resources/Data/" + ParticipantNumber + "-buttonlog.csv";
+      // set up the data file if it's the first real round
+      if(round_num == 1){
 
-      // create writer
-      StreamWriter writer = new StreamWriter(path, true);
-      string header_string = "System.DateTime.Now,Time.time,ParticipantNumber,round_number,ie_condition,td_condition,com_condition,size_condition,experiment_num,buttonname";
-      writer.WriteLine(header_string); // write the line
-      writer.Close(); // close the writer
+        // set up saving location
+        string path = "Assets/Resources/Data/" + ParticipantNumber + "-buttonlog.csv";
+
+        // create writer
+        StreamWriter writer = new StreamWriter(path, true);
+        string header_string = "System.DateTime.Now,Time.time,ParticipantNumber,round_number,ie_condition,td_condition,com_condition,size_condition,experiment_num,buttonname";
+        writer.WriteLine(header_string); // write the line
+        writer.Close(); // close the writer
+
+      }
 
     }
 
@@ -80,8 +84,8 @@ public class ButtonTap : MonoBehaviour
     private void tappedHandler(object sender, EventArgs e)
     {
 
-      // save to disk
-      saveToDisk();
+      // save to disk if it isn't the practice round
+      if(!(round_num == 0)) saveToDisk();
 
       // send message to other player
       sendMessage();

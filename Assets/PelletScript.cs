@@ -39,7 +39,7 @@ public class PelletScript : MonoBehaviour
     Collider2D[] spawn_cell;
 
     // CONDITION: Change this number for the number of taps for bee free
-    private float process_rate = 1.0f/5;
+    private float process_rate = 1.0f/1;
 
     // starting size of the yellow disk
     float scale_size = 0;
@@ -115,8 +115,8 @@ public class PelletScript : MonoBehaviour
       ie_cond = Camera.main.GetComponent<Exit_app_script>().ie_condition;
       size_cond = Camera.main.GetComponent<Exit_app_script>().size_condition;
 
-      // start a data file
-      if(pelletID == 0) {
+      // start a data file if this is the first round
+      if(pelletID == 0 && round_num == 1) {
 
         string path = "Assets/Resources/Data/"+ ParticipantNumber + "-PelletData.csv";
 
@@ -450,26 +450,31 @@ public class PelletScript : MonoBehaviour
 
     public void saveToBuffer(string stringus)
     {
-      string path = "Assets/Resources/Data/"+ ParticipantNumber + "-PelletData.csv";
 
-      StreamWriter writer = new StreamWriter(path, true);
+      if(!(round_num == 0)) {
 
-      string data = System.DateTime.Now + ","
-                      + Time.time + ","
-                      + ParticipantNumber + ","
-                      + round_num + ","
-                      + ie_cond + ","
-                      + td_cond[round_num] + ","
-                      + com_cond + ","
-                      + size_cond + ","
-                      + experiment_num + ","
-                      + transform.position.x + ","
-                      + transform.position.y + ","
-                      + pelletID + ","
-                      + stringus;
+        string path = "Assets/Resources/Data/"+ ParticipantNumber + "-PelletData.csv";
 
-      writer.WriteLine(data);
-      writer.Close();
+        StreamWriter writer = new StreamWriter(path, true);
+
+        string data = System.DateTime.Now + ","
+                        + Time.time + ","
+                        + ParticipantNumber + ","
+                        + round_num + ","
+                        + ie_cond + ","
+                        + td_cond[round_num] + ","
+                        + com_cond + ","
+                        + size_cond + ","
+                        + experiment_num + ","
+                        + transform.position.x + ","
+                        + transform.position.y + ","
+                        + pelletID + ","
+                        + stringus;
+
+        writer.WriteLine(data);
+        writer.Close();
+
+      }
 
     }
 }
