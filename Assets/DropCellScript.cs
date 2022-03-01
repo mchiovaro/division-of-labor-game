@@ -19,6 +19,7 @@ public class DropCellScript : MonoBehaviour
 
     private void Start()
     {
+      Debug.Log("pelletCounter start = " + pelletCounter);
     }
 
     private void OnEnable()
@@ -60,7 +61,7 @@ public class DropCellScript : MonoBehaviour
             if (player_coll.transform.childCount != 0)
             {
 
-                Debug.Log(player_coll.transform.GetChild(0).tag);
+                //Debug.Log(player_coll.transform.GetChild(0).tag);
 
                 dropTapCounter++;
 
@@ -83,6 +84,7 @@ public class DropCellScript : MonoBehaviour
                     player_coll.GetComponent<BeeTap>().grabbed_on = false;
 
                     pelletCounter++;
+                    Debug.Log("pelletCounter = " + pelletCounter);
 
                     // turn the player back to their color and log the drop
                     if (player_coll.tag.Equals("bee_free"))
