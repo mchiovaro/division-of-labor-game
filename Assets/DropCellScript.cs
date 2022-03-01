@@ -84,7 +84,6 @@ public class DropCellScript : MonoBehaviour
                     player_coll.GetComponent<BeeTap>().grabbed_on = false;
 
                     pelletCounter++;
-                    Debug.Log("pelletCounter = " + pelletCounter);
 
                     // turn the player back to their color and log the drop
                     if (player_coll.tag.Equals("bee_free"))
@@ -103,12 +102,6 @@ public class DropCellScript : MonoBehaviour
 
                     // add a pellet to that cell?
                     Camera.main.GetComponent<Exit_app_script>().addPellet(pellet_);
-
-                    // reset the counter if the round is over
-                    if(Camera.main.GetComponent<Exit_app_script>().running_ == false){
-                      pelletCounter = 0;
-                      Debug.Log("pelletCounter = " + pelletCounter);
-                    }
 
                 }
 

@@ -115,8 +115,8 @@ public class BeeTap : MonoBehaviour
         // set field barriers
         float field_top = 5.15f;
         float field_bottom = -5.15f;
-        float field_right = spawn_cells.transform.position.x - 0.8f;
-        float field_left = drop_cells.transform.position.x + 0.8f + .5f;
+        float field_right = spawn_cells.transform.position.x - 0.9f;
+        float field_left = drop_cells.transform.position.x + 0.9f + .5f;
 
         //Debug.Log(drop_cells.transform.GetChild(0).position.x);
 

@@ -39,7 +39,7 @@ public class PelletScript : MonoBehaviour
     Collider2D[] spawn_cell;
 
     // CONDITION: Change this number for the number of taps for bee free
-    private float process_rate = 1.0f/5;
+    private float process_rate = 1.0f/6;
 
     // starting size of the yellow disk
     float scale_size = 0;
@@ -390,9 +390,9 @@ public class PelletScript : MonoBehaviour
               else
               {
                   // play a different tune to let them know
-                  audioData.clip = aClips[4];
+                  audioData.clip = aClips[3];
                   audioData.Play();
-
+                  //Debug.Log()
                   current_seq = 0;
                   seqCorresponds = false;
                   // put all buttons back

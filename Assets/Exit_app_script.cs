@@ -14,7 +14,7 @@ public class Exit_app_script : MonoBehaviour
     public string RA_initials;
 
     // max number of pellets based on number of cells available
-    private const int MAX_PELLETS = 4;
+    private const int MAX_PELLETS = 20;
 
     // initialize conditions variables
     public List<int> td_condition = new List<int>(7);
