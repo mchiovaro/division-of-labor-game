@@ -8,6 +8,9 @@
 
 ##### Set up #####
 
+# set working directory
+setwd("./Assets/Resources/loadParams/")
+
 # set seed for reproducibility
 set.seed(2022)
 
@@ -16,8 +19,8 @@ df <- data.frame(matrix(ncol = 12, nrow = 315))
 
 # provide column names
 colnames(df) <- c('group_number', 'ie_condition',
-                  'td_1', 'td_1', 'td_1', 'td_1', 
-                  'td_1', 'td_1', 'com_condition', 
+                  'td_1', 'td_2', 'td_3', 'td_4', 
+                  'td_5', 'td_6', 'com_condition', 
                   'group_size', 'practice', 'experiment_number')
 
 ##### Experiment number #####
