@@ -107,8 +107,8 @@ public class BeeTap : MonoBehaviour
     {
         // create barriers for left and right of work cells
         // let the player enter the cell a little (0.8f) so they can be in touch with the pellet to grab it
-        float barrier_right = work_row.transform.position.x + 0.8f;
-        float barrier_left = work_row.transform.position.x - 0.8f;
+        float barrier_right = work_row.transform.position.x + .9f;
+        float barrier_left = work_row.transform.position.x - .9f;
         float barrier_top = 3.77f + .5f;
         float barrier_bottom = -3.77f - .5f;
 

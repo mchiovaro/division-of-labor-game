@@ -202,8 +202,8 @@ namespace TouchScript.Behaviors
           work_row = GameObject.FindGameObjectWithTag("work_row_middle");
 
           // create barriers (let the player enter the cell a little so they can be in touch with the pellet to grab it)
-          barrier_right = work_row.transform.position.x + 0.8f;
-          barrier_left = work_row.transform.position.x - 0.8f;
+          barrier_right = work_row.transform.position.x + .9f;
+          barrier_left = work_row.transform.position.x - .9f;
           barrier_top = 3.77f + .5f;
           barrier_bottom = -3.77f - .5f;
 
