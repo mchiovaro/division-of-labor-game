@@ -14,7 +14,7 @@ public class Exit_app_script : MonoBehaviour
     public string RA_initials;
 
     // max number of pellets based on number of cells available
-    private const int MAX_PELLETS = 3;
+    private const int MAX_PELLETS = 20;
 
     // initialize conditions variables
     public List<int> td_condition = new List<int>(7);
@@ -43,7 +43,7 @@ public class Exit_app_script : MonoBehaviour
 
     // initial conditions
     public int round_number = 0;
-    private bool practice_mode = true; // true to include the practice trial
+    public bool practice_mode = true; // true to include the practice trial
 
     // allows for the rate of spawn to be changed in condition checkCondition()
     private List<float> spawn_rate = new List<float>(new float[MAX_PELLETS]);
@@ -314,6 +314,7 @@ public class Exit_app_script : MonoBehaviour
             // if this was the practice round, set to false (if more attempts are needed, for now they just restart game)
             if (practice_mode){
                 practice_mode = false;
+                round_number++;
             }
 
             checkCondition(); // set waiting screen with td_condition prompt for bee_free
@@ -388,13 +389,18 @@ public class Exit_app_script : MonoBehaviour
 
         // td_condition
 
+        // create temp variable to hold the practice condition
+        int temp_td;
+
+        // parse apart conditions from file going down column 1
+        int.TryParse(col[10], out temp_td);
+
+        // add the condition to a string
+        td_condition.Add(temp_td);
+
         // increase by 1 until we hit six (FIX: make this 7, one for trial round)
         for (int ii = 2; ii < 8; ii++)
         {
-
-            // create temp variable to hold the condition
-            int temp_td;
-
             // parse apart conditions from file going down column 1
             int.TryParse(col[ii], out temp_td);
 

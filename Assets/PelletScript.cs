@@ -39,7 +39,7 @@ public class PelletScript : MonoBehaviour
     Collider2D[] spawn_cell;
 
     // CONDITION: Change this number for the number of taps for bee free
-    private float process_rate = 1.0f/1;
+    private float process_rate = 1.0f/5;
 
     // starting size of the yellow disk
     float scale_size = 0;
