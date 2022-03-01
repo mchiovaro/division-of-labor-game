@@ -14,7 +14,7 @@ public class Exit_app_script : MonoBehaviour
     public string RA_initials;
 
     // max number of pellets based on number of cells available
-    private const int MAX_PELLETS = 20;
+    private const int MAX_PELLETS = 4;
 
     // initialize conditions variables
     public List<int> td_condition = new List<int>(7);
@@ -52,7 +52,7 @@ public class Exit_app_script : MonoBehaviour
     private List<GameObject> dropped_pellets = new List<GameObject>();
 
     // trial running, spawn rate, and frame variables
-    private bool running_ = false;
+    public bool running_ = false;
     private float next_spawn = 0.0f;
     private int current_spawn = 0;
 
@@ -293,6 +293,7 @@ public class Exit_app_script : MonoBehaviour
             {
                 drop_cells.transform.GetChild(ii).GetComponent<DropCellScript>().dropTapCounter = 0;
                 drop_cells.transform.GetChild(ii).GetComponent<DropCellScript>().pelletCounter = 0;
+                Debug.Log("RESETTING + pelletCounter = " + drop_cells.transform.GetChild(ii).GetComponent<DropCellScript>().pelletCounter);
             }
 
             for (int ii = 0; ii < work_cells.transform.childCount; ii++)
@@ -308,7 +309,7 @@ public class Exit_app_script : MonoBehaviour
             // if it wasn't the practice round, play again
             if(!practice_mode){
               round_number++;
-              Debug.Log("round_number = " + round_number);
+              //Debug.Log("round_number = " + round_number);
             }
 
             // if this was the practice round, set to false (if more attempts are needed, for now they just restart game)

@@ -104,6 +104,12 @@ public class DropCellScript : MonoBehaviour
                     // add a pellet to that cell?
                     Camera.main.GetComponent<Exit_app_script>().addPellet(pellet_);
 
+                    // reset the counter if the round is over
+                    if(Camera.main.GetComponent<Exit_app_script>().running_ == false){
+                      pelletCounter = 0;
+                      Debug.Log("pelletCounter = " + pelletCounter);
+                    }
+
                 }
 
 
