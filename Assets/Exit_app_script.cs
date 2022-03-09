@@ -14,7 +14,7 @@ public class Exit_app_script : MonoBehaviour
     public string RA_initials;
 
     // max number of pellets based on number of cells available
-    private const int MAX_PELLETS = 20;
+    private int MAX_PELLETS = 8;
 
     // initialize conditions variables
     public List<int> td_condition = new List<int>(7);
@@ -44,12 +44,14 @@ public class Exit_app_script : MonoBehaviour
     // initial conditions
     public int round_number = 0;
     public bool practice_mode = true; // true to include the practice trial
+    public bool explain_mode = true; // true to include the practice trial
 
     // allows for the rate of spawn to be changed in condition checkCondition()
-    private List<float> spawn_rate = new List<float>(new float[MAX_PELLETS]);
+    private List<float> spawn_rate = new List<float>(new float[20]);
 
     // counter for number of dropped pellets
     private List<GameObject> dropped_pellets = new List<GameObject>();
+    public GameObject[] pels;
 
     // trial running, spawn rate, and frame variables
     public bool running_ = false;
@@ -87,7 +89,7 @@ public class Exit_app_script : MonoBehaviour
     void Start()
     {
         // create list/variable for saving pellet data
-        for (int ii = 0; ii < MAX_PELLETS; ii++)
+        for (int ii = 0; ii < 20; ii++)
         {
             //
             PelletData pD;
@@ -98,7 +100,7 @@ public class Exit_app_script : MonoBehaviour
         }
 
         // set spawn rate to every 2 seconds
-        for (int ii = 0; ii < MAX_PELLETS; ii++)
+        for (int ii = 0; ii < 20; ii++)
             spawn_rate[ii] = 2.0f;
 
         // set up parameters and conditions
@@ -149,23 +151,27 @@ public class Exit_app_script : MonoBehaviour
         //float timestamp = Time.time - timeIni; // brings timestamp back to zero before each trial
         float timestamp = Time.time; // keeping the time relative to the start of the game, not reseting at each trial
 
+        // allow for escape quitting
+        if (Input.GetKey("escape")) Application.Quit();
+
         // if we are currently in a trial
         if (running_)
         {
 
-            // allow for escape quitting
-            if (Input.GetKey("escape")) Application.Quit();
-
-            //
-            if (Time.time > next_spawn && current_spawn < spawn_rate.Count)
+            // If it's time to spawn the next pellet and there are still pellets to be spawned // spawn_rate.Count is MAX_PELLETS
+            if (Time.time > next_spawn && current_spawn < MAX_PELLETS)
             {
-
+                Debug.Log("RUNNING");
+                Debug.Log("Time.time" + Time.time + " > next_spawn " + next_spawn + "&& current_spawn " + current_spawn + " < spawn_rate.Count" + spawn_rate.Count);
                 List<int> avail_spawn = new List<int>();
 
                 for (int ii = 0; ii < spawn_cells.transform.childCount; ii++)
                 {
-                    if (!spawn_cells.transform.GetChild(ii).GetComponent<SpawnCellScript>().contact_on)
+                    if (!spawn_cells.transform.GetChild(ii).GetComponent<SpawnCellScript>().contact_on) {
+                      // make a list of availble pellets to spawn
                         avail_spawn.Add(ii);
+                        Debug.Log("avail_spawn = " + avail_spawn[ii]);
+                      }
                 }
 
                 // if there are more pellets, keep spawning
@@ -177,11 +183,64 @@ public class Exit_app_script : MonoBehaviour
                     int rand_ini = Random.Range(0, avail_spawn.Count);
 
                     // spawn a pellet prefab
-                    GameObject pel_ = Instantiate(foodPrefab, spawn_cells.transform.GetChild(avail_spawn[rand_ini]).position, Quaternion.identity);
-                    pel_.GetComponent<PelletScript>().pelletID = current_spawn - 1;
+                    // find all pellets on the field
+                    pels = GameObject.FindGameObjectsWithTag("pellet");
+                    Debug.Log("pels.Length = " + pels.Length);
 
-                }
-            }
+                      int counter = 0;
+                      bool spawned = false;
+
+                      // if this isn't the first spawn
+                      if(pels.Length > 0){
+
+                        // might just need this stuff
+                        while (spawned == false) {
+                              //Debug.Log("hit while loop for spawned = false");
+                              // randomly gives a number: 1-10
+                              int rand_int = Random.Range(0, avail_spawn.Count);
+
+                              // for each pellet currently on the field
+                              for (int ii = 0; ii < pels.Length; ii++){
+
+                                //Debug.Log(ii + "pellet position = " + pels[ii].transform.position + ". projected position = " + spawn_cells.transform.GetChild(avail_spawn[rand_int]).position);
+                                // if the projected spawn location is not field with this pellet, add one to the count
+                                if (!(spawn_cells.transform.GetChild(avail_spawn[rand_int]).position == pels[ii].transform.position)){
+
+                                  counter++;
+                                  Debug.Log("counter = " + counter + ".  " + ii + " pellet position = " + pels[ii].transform.position + ". projected position = " + spawn_cells.transform.GetChild(avail_spawn[rand_int]).position);
+
+                                  // if we have
+                                  if (counter == pels.Length){
+                                    GameObject pel_ = Instantiate(foodPrefab, spawn_cells.transform.GetChild(avail_spawn[rand_int]).position, Quaternion.identity);
+                                    pel_.GetComponent<PelletScript>().pelletID = current_spawn - 1;
+                                    spawned = true;
+                                    counter = 0;
+                                    pels = GameObject.FindGameObjectsWithTag("pellet");
+                                    Debug.Log("SPAWNED " + pels.Length + " in " + spawn_cells.transform.GetChild(avail_spawn[rand_int]).position);
+
+                                  }
+                                }
+                              }
+                              counter = 0;
+                        } // while
+
+                      } // pellet.Length > 0
+
+                      else if(pels.Length == 0) {
+                        int rand_int = Random.Range(0, avail_spawn.Count);
+
+                        GameObject pel_ = Instantiate(foodPrefab, spawn_cells.transform.GetChild(avail_spawn[rand_int]).position, Quaternion.identity);
+                        pel_.GetComponent<PelletScript>().pelletID = current_spawn - 1;
+                        Debug.Log("FIRST SPAWN");
+                      }
+
+                      // reset to false for the next spawn
+                      //location_free = false;
+
+                } // avail spawn
+
+            } // time/time
+
 
             // grab timstamp for each player and add to allTimeStamps (x, y coord)
             data_beeFree.allTimeStamps.Add(timestamp);
@@ -191,7 +250,7 @@ public class Exit_app_script : MonoBehaviour
             data_beeFree.allPositions.Add(beeFree.transform.position);
             data_beeRestrict.allPositions.Add(beeRestrict.transform.position);
 
-        }
+        } // running
 
         // if this isn't the last round (if this isn't trial 7 (because we added a 0 at the end to prompt the ending screen in checkCondition()))
         else if (!(round_number == td_condition.Count - 1))
@@ -221,7 +280,7 @@ public class Exit_app_script : MonoBehaviour
 
         }
 
-    }
+    } // update
 
     // fixed rate for saving position data (50 samples per second)
     private void FixedUpdate()
@@ -306,19 +365,33 @@ public class Exit_app_script : MonoBehaviour
                 spawn_cells.transform.GetChild(ii).GetComponent<SpawnCellScript>().contact_on = false;
             }
 
-            // if it wasn't the practice round, play again
-            if(!practice_mode){
+            // if this was the explanation round (7 pellets), set to explain mode to false and continue with full practice round
+            if (explain_mode){
+
+                explain_mode = false;
+                MAX_PELLETS = 20; // set to full pellet count
+
+                // set up practice screen
+                ui_image.enabled = true;
+                ui_text.text = "Red player: Condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
+
+            }
+
+            // if this was the practice round, set to false
+            else if (practice_mode && !explain_mode){
+              //MAX_PELLETS = 20; // Set to full pellet count
+              practice_mode = false;
               round_number++;
-              //Debug.Log("round_number = " + round_number);
+              checkCondition(); // set waiting screen
             }
 
-            // if this was the practice round, set to false (if more attempts are needed, for now they just restart game)
-            if (practice_mode){
-                practice_mode = false;
-                round_number++;
+            // if it wasn't the practice round, play again
+            else if(!practice_mode){
+              round_number++;
+              checkCondition(); // set waiting screen
             }
 
-            checkCondition(); // set waiting screen with td_condition prompt for bee_free
+
 
             // clear pellet data
             for (int ii = 0; ii < MAX_PELLETS; ii++)

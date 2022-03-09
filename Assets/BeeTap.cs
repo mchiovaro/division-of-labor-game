@@ -11,7 +11,8 @@ using Random = UnityEngine.Random;
 public class BeeTap : MonoBehaviour
 {
     //bool contact_on = false;
-    public bool grabbed_on;
+    public bool grabbed_on, freetapping, restricttapping;
+    public int tapID;
 
     Collider2D player_coll; // collider for the players
     //Collider2D[] work_cell; // collider for the cells
@@ -31,6 +32,9 @@ public class BeeTap : MonoBehaviour
     {
 
       grabbed_on = false;
+      freetapping = false;
+      restricttapping = false;
+      tapID = 50;
       Debug.Log("GRABBED SET TO FALSE");
 
       // find the cells

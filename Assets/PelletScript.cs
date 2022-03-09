@@ -224,7 +224,8 @@ public class PelletScript : MonoBehaviour
     // when pellet is tapped
     private void tappedHandler2(object sender, EventArgs eventArgs)
     {
-
+      //
+      Debug.Log("Tapped pellet = " + pelletID);
       // if bee free is in contact and not holding a pellet OR restrict in contact and not holding a pellet
       if ((free_contact_on == true && beeFree.GetComponent<BeeTap>().grabbed_on == false && advanced_pellet == false) || (restrict_contact_on == true && beeRestricted.GetComponent<BeeTap>().grabbed_on == false && advanced_pellet == false))
       {
@@ -234,7 +235,7 @@ public class PelletScript : MonoBehaviour
           if(restrict_contact_on == true && free_contact_on == false) grabber_base = 2;
 
           // If the yellow disk is not the size of the whole pellet
-          if (scale_size < 1)
+          if (scale_size < 1) // && transform.GetChild(avail_spawn[rand_ini]).position
           {
               // log the tap
               if(grabber_base == 1)
