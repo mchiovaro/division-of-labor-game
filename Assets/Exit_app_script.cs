@@ -151,8 +151,11 @@ public class Exit_app_script : MonoBehaviour
         //float timestamp = Time.time - timeIni; // brings timestamp back to zero before each trial
         float timestamp = Time.time; // keeping the time relative to the start of the game, not reseting at each trial
 
-        // allow for escape quitting
+        // allow for escape quitting at any time
         if (Input.GetKey("escape")) Application.Quit();
+
+        // allow us to end the round in the middle if needed
+        if (Input.GetKey("up")) SkipRound();
 
         // if we are currently in a trial
         if (running_)
@@ -207,7 +210,7 @@ public class Exit_app_script : MonoBehaviour
                                 if (!(spawn_cells.transform.GetChild(avail_spawn[rand_int]).position == pels[ii].transform.position)){
 
                                   counter++;
-                                  Debug.Log("counter = " + counter + ".  " + ii + " pellet position = " + pels[ii].transform.position + ". projected position = " + spawn_cells.transform.GetChild(avail_spawn[rand_int]).position);
+                                  //Debug.Log("counter = " + counter + ".  " + ii + " pellet position = " + pels[ii].transform.position + ". projected position = " + spawn_cells.transform.GetChild(avail_spawn[rand_int]).position);
 
                                   // if we have
                                   if (counter == pels.Length){
@@ -216,7 +219,7 @@ public class Exit_app_script : MonoBehaviour
                                     spawned = true;
                                     counter = 0;
                                     pels = GameObject.FindGameObjectsWithTag("pellet");
-                                    Debug.Log("SPAWNED " + pels.Length + " in " + spawn_cells.transform.GetChild(avail_spawn[rand_int]).position);
+                                    //Debug.Log("SPAWNED " + pels.Length + " in " + spawn_cells.transform.GetChild(avail_spawn[rand_int]).position);
 
                                   }
                                 }
@@ -231,15 +234,12 @@ public class Exit_app_script : MonoBehaviour
 
                         GameObject pel_ = Instantiate(foodPrefab, spawn_cells.transform.GetChild(avail_spawn[rand_int]).position, Quaternion.identity);
                         pel_.GetComponent<PelletScript>().pelletID = current_spawn - 1;
-                        Debug.Log("FIRST SPAWN");
+                        //Debug.Log("FIRST SPAWN");
                       }
-
-                      // reset to false for the next spawn
-                      //location_free = false;
 
                 } // avail spawn
 
-            } // time/time
+            } // time.time
 
 
             // grab timstamp for each player and add to allTimeStamps (x, y coord)
@@ -318,6 +318,94 @@ public class Exit_app_script : MonoBehaviour
         }
     }
 
+    public void SkipRound(){
+
+          Debug.Log("SKIPPING");
+          running_ = false;
+
+          // clear pellet data
+          dropped_pellets.Clear();
+
+          // find and destroy all pellets
+          GameObject[] allPellets = GameObject.FindGameObjectsWithTag("pellet");
+          foreach (GameObject ggoo in allPellets) Destroy(ggoo);
+
+          // don't let the players move anymore
+          beeFree.GetComponent<TouchScript.Behaviors.Transformer>().enabled = false;
+          beeRestrict.GetComponent<TouchScript.Behaviors.Transformer>().enabled = false;
+
+          // reset grabbing parameter
+          beeFree.GetComponent<BeeTap>().grabbed_on = false;
+          beeRestrict.GetComponent<BeeTap>().grabbed_on = false;
+
+          // reset the colors
+          beeFree.GetComponent<SpriteRenderer>().color = Color.red;
+          beeRestrict.GetComponent<SpriteRenderer>().color = Color.blue;
+
+          // reset positions of players
+          beeFree.transform.position = new Vector3(-3.25f, 0, 0);
+          beeRestrict.transform.position = new Vector3(3.25f, 0, 0);
+          // reset variables
+          current_spawn = 0;
+          next_spawn = 0;
+
+
+          for (int ii = 0; ii < drop_cells.transform.childCount; ii++)
+          {
+              drop_cells.transform.GetChild(ii).GetComponent<DropCellScript>().dropTapCounter = 0;
+              drop_cells.transform.GetChild(ii).GetComponent<DropCellScript>().pelletCounter = 0;
+              Debug.Log("RESETTING + pelletCounter = " + drop_cells.transform.GetChild(ii).GetComponent<DropCellScript>().pelletCounter);
+          }
+
+          for (int ii = 0; ii < work_cells.transform.childCount; ii++)
+          {
+              work_cells.transform.GetChild(ii).GetComponent<workCellScript>().resetParameters();
+          }
+
+          for (int ii = 0; ii < spawn_cells.transform.childCount; ii++)
+          {
+              spawn_cells.transform.GetChild(ii).GetComponent<SpawnCellScript>().contact_on = false;
+          }
+
+          Debug.Log("practice_mode = " + practice_mode + " explain_mode = " + explain_mode);
+
+          // display screen
+          // if this was the explanation round (7 pellets), set to explain mode to false and continue with full practice round
+          if (explain_mode){
+
+              ui_image.enabled = true;
+              ui_text.text = "Starting over: Explanation Round \nRed player: Condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
+
+          }
+
+          // if this was the practice round, set to false
+          else if (practice_mode && !explain_mode){
+
+            // set up practice screen
+            ui_image.enabled = true;
+            ui_text.text = "Starting over: Practice Round \nRed player: Condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
+
+          }
+
+          // if it wasn't the practice round, play again
+          else if(!practice_mode){
+
+            ui_image.enabled = true;
+            ui_text.text = "Starting over: Round number = " + round_number + "\nRed player: Condition " + td_condition[round_number].ToString() + "\n Ready for the next round?";
+
+          }
+
+
+
+          // clear pellet data
+          for (int ii = 0; ii < MAX_PELLETS; ii++)
+          {
+              pellData[ii].pelletEvent.Clear();
+              pellData[ii].frameNum.Clear();
+          }
+
+    }
+
     // adding pellet data
     public void addPellet(GameObject pell_)
     {
@@ -373,7 +461,7 @@ public class Exit_app_script : MonoBehaviour
 
                 // set up practice screen
                 ui_image.enabled = true;
-                ui_text.text = "Red player: Condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
+                ui_text.text = "Practice Round \nRed player: Condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
 
             }
 
@@ -390,8 +478,6 @@ public class Exit_app_script : MonoBehaviour
               round_number++;
               checkCondition(); // set waiting screen
             }
-
-
 
             // clear pellet data
             for (int ii = 0; ii < MAX_PELLETS; ii++)
@@ -414,7 +500,7 @@ public class Exit_app_script : MonoBehaviour
             case FREE_HARD:
 
                 ui_image.enabled = true;
-                ui_text.text = "Round Finished. \n Red player: Condition " + FREE_HARD.ToString() + ".\n Ready for next round?";
+                ui_text.text = "Round Finished.\nRound number = " + round_number + "\nRed player: Condition " + FREE_HARD.ToString() + "\n Ready for the next round?";
 
                 break;
 
@@ -422,7 +508,7 @@ public class Exit_app_script : MonoBehaviour
             case RESTRICT_HARD:
 
                 ui_image.enabled = true;
-                ui_text.text = "Round Finished. \n Red player: Condition " + RESTRICT_HARD.ToString() + ".\n Ready for next round?";
+                ui_text.text = "Round Finished.\nRound number = " + round_number + "\nRed player: Condition " + RESTRICT_HARD.ToString() + "\n Ready for the next round?";
 
                 break;
 
@@ -430,7 +516,7 @@ public class Exit_app_script : MonoBehaviour
             case BOTH_HARD:
 
                 ui_image.enabled = true;
-                ui_text.text = "Round Finished. \n Red player: Condition " + BOTH_HARD.ToString() + ".\n Ready for next round?";
+                ui_text.text = "Round Finished.\nRound number = " + round_number + "\nRed player: Condition " + BOTH_HARD.ToString() + "\n Ready for the next round?";
 
                 break;
 
