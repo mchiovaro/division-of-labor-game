@@ -5,6 +5,7 @@
 using System;
 using TouchScript.Gestures;
 using UnityEngine;
+using System.Collections.Generic;
 using Random = UnityEngine.Random;
 
 /// <exclude />
@@ -26,7 +27,8 @@ public class BeeTap : MonoBehaviour
     GameObject work_row, drop_cells, spawn_cells, beeFree, beeRestrict;
 
     // read in ie_condition from Exit_app_script.cs
-    private int ie_cond;
+    public List<int> ie_cond = new List<int>(7);
+    public int round_num;
 
     void Awake ()
     {
@@ -48,8 +50,9 @@ public class BeeTap : MonoBehaviour
     {
 
       // find conditions
-      exitappscript = FindObjectOfType<Exit_app_script>();
+      exitappscript = Camera.main.GetComponent<Exit_app_script>();
       ie_cond = exitappscript.ie_condition;
+      Debug.Log("ROUND BEETAP = " + round_num);
 
     }
 
@@ -59,6 +62,7 @@ public class BeeTap : MonoBehaviour
 
       beeFree = GameObject.FindGameObjectWithTag("bee_free");
       beeRestrict = GameObject.FindGameObjectWithTag("bee_restricted");
+      round_num = Camera.main.GetComponent<Exit_app_script>().round_number;
 
       //Debug.Log("position = " + GameObject.Find("player_blue").transform.position.x);
 
@@ -87,7 +91,7 @@ public class BeeTap : MonoBehaviour
 
           // note that they are in contact (so that they can pick it up)
         	//contact_on = true;
-          Debug.Log("CONTACT ON");
+          //Debug.Log("CONTACT ON");
 		    }
     }
 
@@ -98,7 +102,7 @@ public class BeeTap : MonoBehaviour
 		    {
           player_coll = collision.collider;
         	//contact_on = false;
-          Debug.Log("CONTACT OFF");
+          //Debug.Log("CONTACT OFF");
 		    }
     }
 
@@ -109,6 +113,7 @@ public class BeeTap : MonoBehaviour
 
     private void checkBoundaries()
     {
+
         // create barriers for left and right of work cells
         // let the player enter the cell a little (0.8f) so they can be in touch with the pellet to grab it
         float barrier_right = work_row.transform.position.x + .9f;
@@ -148,16 +153,19 @@ public class BeeTap : MonoBehaviour
         if (GameObject.Find("player_red").transform.position.x > field_right)
           GameObject.Find("player_red").transform.position = new Vector3(field_right, GameObject.Find("player_red").transform.position.y, GameObject.Find("player_red").transform.position.z);
 
-        // if ie_condition = 1, block restricted player and allow free player to pass.
-        if (ie_cond == 1) {
+        // if ie_cond[round_num] = 1, block restricted player and allow free player to pass.
+        if (ie_cond[round_num] == 1) {
+
+           //Debug.Log("I.E. = 1");
            // if the restricted player hits the boundary, don't allow them to pass.
            if (GameObject.Find("player_blue").transform.position.x <  barrier_right) {
                   GameObject.Find("player_blue").transform.position = new Vector3(barrier_right, GameObject.Find("player_blue").transform.position.y, GameObject.Find("player_blue").transform.position.z);
             }
         }
 
-        // if ie_condition = 2, block free player and allow restricted player to pass.
-        if (ie_cond == 2) {
+        // if ie_cond[round_num] = 2, block free player and allow restricted player to pass.
+        if (ie_cond[round_num] == 2) {
+           //Debug.Log("I.E. = 2");
            // if the restricted player hits the boundary, don't allow them to pass.
            if (GameObject.Find("player_red").transform.position.x > barrier_left) {
                   GameObject.Find("player_red").transform.position = new Vector3(barrier_left, GameObject.Find("player_red").transform.position.y, GameObject.Find("player_red").transform.position.z);

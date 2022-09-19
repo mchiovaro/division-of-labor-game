@@ -1,4 +1,4 @@
-##### Randomizing conditions #####
+##### Randomizing conditions for experiment 1 #####
 #
 # This script creates the randomized condition orders for 
 # the task allocation experiments

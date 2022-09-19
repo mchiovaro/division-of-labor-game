@@ -14,11 +14,12 @@ public class Exit_app_script : MonoBehaviour
     public string RA_initials;
 
     // max number of pellets based on number of cells available
-    private int MAX_PELLETS = 8;
+    private int MAX_PELLETS = 1;
 
     // initialize conditions variables
     public List<int> td_condition = new List<int>(7);
-    public int ie_condition;
+    public List<int> ie_condition = new List<int>(7); // add list for ie conditions within
+    //public int ie_condition;
     public int com_condition;
     public int size_condition;
     public int experiment_num;
@@ -109,7 +110,7 @@ public class Exit_app_script : MonoBehaviour
 
         // set up practice screen
         ui_image.enabled = true;
-        ui_text.text = "Red player: Condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
+        ui_text.text = "Red player: Tapping condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
 
         //allocate memory for Data to save
         data_beeFree.allPositions = new List<Vector3>(100000); // old bee
@@ -300,7 +301,7 @@ public class Exit_app_script : MonoBehaviour
                     + Time.time + ","
                     + ParticipantNumber + ","
                     + round_number + ","
-                    + ie_condition + ","
+                    + ie_condition[round_number] + ","
                     + td_condition[round_number] + ","
                     + com_condition + ","
                     + size_condition + ","
@@ -374,7 +375,7 @@ public class Exit_app_script : MonoBehaviour
           if (explain_mode){
 
               ui_image.enabled = true;
-              ui_text.text = "Starting over: Explanation Round \nRed player: Condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
+              ui_text.text = "Starting over: Explanation Round \nRed player: Tapping condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
 
           }
 
@@ -383,7 +384,7 @@ public class Exit_app_script : MonoBehaviour
 
             // set up practice screen
             ui_image.enabled = true;
-            ui_text.text = "Starting over: Practice Round \nRed player: Condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
+            ui_text.text = "Starting over: Practice Round \nRed player: Tapping condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
 
           }
 
@@ -391,7 +392,7 @@ public class Exit_app_script : MonoBehaviour
           else if(!practice_mode){
 
             ui_image.enabled = true;
-            ui_text.text = "Starting over: Round number = " + round_number + "\nRed player: Condition " + td_condition[round_number].ToString() + "\n Ready for the next round?";
+            ui_text.text = "Starting over: Round number = " + round_number + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n Ready for the next round?";
 
           }
 
@@ -457,11 +458,11 @@ public class Exit_app_script : MonoBehaviour
             if (explain_mode){
 
                 explain_mode = false;
-                MAX_PELLETS = 20; // set to full pellet count
+                MAX_PELLETS = 1; // set to full pellet count
 
                 // set up practice screen
                 ui_image.enabled = true;
-                ui_text.text = "Practice Round \nRed player: Condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
+                ui_text.text = "Practice Round \nRed player: Tapping condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
 
             }
 
@@ -500,7 +501,7 @@ public class Exit_app_script : MonoBehaviour
             case FREE_HARD:
 
                 ui_image.enabled = true;
-                ui_text.text = "Round Finished.\nRound number = " + round_number + "\nRed player: Condition " + FREE_HARD.ToString() + "\n Ready for the next round?";
+                ui_text.text = "Round Finished.\nRound number = " + round_number + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n Ready for the next round?";
 
                 break;
 
@@ -508,7 +509,7 @@ public class Exit_app_script : MonoBehaviour
             case RESTRICT_HARD:
 
                 ui_image.enabled = true;
-                ui_text.text = "Round Finished.\nRound number = " + round_number + "\nRed player: Condition " + RESTRICT_HARD.ToString() + "\n Ready for the next round?";
+                ui_text.text = "Round Finished.\nRound number = " + round_number + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n Ready for the next round?";
 
                 break;
 
@@ -516,7 +517,7 @@ public class Exit_app_script : MonoBehaviour
             case BOTH_HARD:
 
                 ui_image.enabled = true;
-                ui_text.text = "Round Finished.\nRound number = " + round_number + "\nRed player: Condition " + BOTH_HARD.ToString() + "\n Ready for the next round?";
+                ui_text.text = "Round Finished.\nRound number = " + round_number + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n Ready for the next round?";
 
                 break;
 
@@ -549,63 +550,81 @@ public class Exit_app_script : MonoBehaviour
 
         // td_condition
 
-        // create temp variable to hold the practice condition
-        int temp_td;
+            // create temp variable to hold the practice condition
+            int temp_td;
 
-        // parse apart conditions from file going down column 1
-        int.TryParse(col[10], out temp_td);
-
-        // add the condition to a string
-        td_condition.Add(temp_td);
-
-        // increase by 1 until we hit six (FIX: make this 7, one for trial round)
-        for (int ii = 2; ii < 8; ii++)
-        {
-            // parse apart conditions from file going down column 1
-            int.TryParse(col[ii], out temp_td);
+            // grab practice condition
+            int.TryParse(col[15], out temp_td);
 
             // add the condition to a string
             td_condition.Add(temp_td);
-        }
 
-        //add the stopping condition at the end
-        td_condition.Add(CONDITION_EXPERIMENT_OVER);
+            // grab the actual round conditions
+            for (int ii = 2; ii < 8; ii++)
+            {
+                // parse apart conditions from file
+                int.TryParse(col[ii], out temp_td);
+
+                // add the condition to a string
+                td_condition.Add(temp_td);
+            }
+
+            //add the stopping condition at the end
+            td_condition.Add(CONDITION_EXPERIMENT_OVER);
 
         // ie_condition
 
-        // create temp variable to hold the condition
-        int temp_ie;
+            // create temp variable to hold the condition
+            int temp_ie;
 
-        // parse apart condition from file column 1
-        int.TryParse(col[1], out temp_ie);
-        ie_condition = temp_ie;
+            // parse apart conditions from file going down column 1
+            int.TryParse(col[17], out temp_ie);
+
+            // add the condition to a string
+            ie_condition.Add(temp_ie);
+
+            // increase by 1 until we hit six (FIX: make this 7, one for trial round)
+            for (int ii = 8; ii < 14; ii++)
+            {
+                // parse apart conditions from file going down column 1
+                int.TryParse(col[ii], out temp_ie);
+
+                //Debug.Log("temp_ie = " + temp_ie);
+
+                // add the condition to a string
+                ie_condition.Add(temp_ie);
+            }
+
+            //add the stopping condition at the end
+            ie_condition.Add(CONDITION_EXPERIMENT_OVER);
 
         // com_condition
 
-        // create temp variable to hold the condition
-        int temp_com;
+            // create temp variable to hold the condition
+            int temp_com;
 
-        // parse apart condition from file column 8
-        int.TryParse(col[8], out temp_com);
-        com_condition = temp_com;
+            // parse apart condition from file column 8
+            int.TryParse(col[1], out temp_com);
+            com_condition = temp_com;
 
         // size_condition: number of participants
 
-        // create temp variable to hold the condition
-        int temp_size;
+            // create temp variable to hold the condition
+            int temp_size;
 
-        // parse apart condition from file column 9
-        int.TryParse(col[9], out temp_size);
-        size_condition = temp_size;
+            // parse apart condition from file column 9
+            int.TryParse(col[14], out temp_size);
+            size_condition = temp_size;
 
         // experiment_num
 
-        // create temp variable to hold the condition
-        int temp_exp;
+            // create temp variable to hold the condition
+            int temp_exp;
 
-        // parse apart condition from file column 9
-        int.TryParse(col[10], out temp_exp);
-        experiment_num = temp_exp;
+            // parse apart condition from file column 10
+            int.TryParse(col[16], out temp_exp);
+            experiment_num = temp_exp;
+
 
     }
 

@@ -67,7 +67,8 @@ public class PelletScript : MonoBehaviour
 
     // initialize conditions variables
     public List<int> td_cond = new List<int>(7);
-    public int ParticipantNumber, round_num, ie_cond, com_cond, size_cond, experiment_num;
+    public List<int> ie_cond = new List<int>(7);
+    public int ParticipantNumber, round_num, com_cond, size_cond, experiment_num;
 
     private void Awake()
     {
@@ -107,12 +108,12 @@ public class PelletScript : MonoBehaviour
       // get td_condition from Exit_app_script
       exitappscript = Camera.main.GetComponent<Exit_app_script>();
       td_cond = exitappscript.td_condition;
+      ie_cond = exitappscript.ie_condition;
 
       // get the round number and other conditions from Exit_app_script
       ParticipantNumber = exitappscript.ParticipantNumber;
       round_num = Camera.main.GetComponent<Exit_app_script>().round_number;
       com_cond = Camera.main.GetComponent<Exit_app_script>().com_condition;
-      ie_cond = Camera.main.GetComponent<Exit_app_script>().ie_condition;
       size_cond = Camera.main.GetComponent<Exit_app_script>().size_condition;
 
       // start a data file if this is the first round
@@ -462,7 +463,7 @@ public class PelletScript : MonoBehaviour
                         + Time.time + ","
                         + ParticipantNumber + ","
                         + round_num + ","
-                        + ie_cond + ","
+                        + ie_cond[round_num] + ","
                         + td_cond[round_num] + ","
                         + com_cond + ","
                         + size_cond + ","

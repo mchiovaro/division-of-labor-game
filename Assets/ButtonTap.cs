@@ -17,9 +17,10 @@ public class ButtonTap : MonoBehaviour
 
     // read in td_condition from Exit_app_script.cs
     private List<int> td_cond = new List<int>();
+    private List<int> ie_cond = new List<int>();
 
     // create a variables
-    private int ParticipantNumber, round_num, com_cond, ie_cond, size_cond, experiment_num;
+    private int ParticipantNumber, round_num, com_cond, size_cond, experiment_num;
 
     // create text holder from buttonlog
     public String text;
@@ -37,12 +38,12 @@ public class ButtonTap : MonoBehaviour
       // get td_condition from Exit_app_script
       exitappscript = Camera.main.GetComponent<Exit_app_script>();
       td_cond = exitappscript.td_condition;
+      ie_cond = exitappscript.ie_condition;
 
       // get the round number and other conditions from Exit_app_script
       ParticipantNumber = exitappscript.ParticipantNumber;
       round_num = Camera.main.GetComponent<Exit_app_script>().round_number;
       com_cond = Camera.main.GetComponent<Exit_app_script>().com_condition;
-      ie_cond = Camera.main.GetComponent<Exit_app_script>().ie_condition;
       size_cond = Camera.main.GetComponent<Exit_app_script>().size_condition;
       experiment_num = Camera.main.GetComponent<Exit_app_script>().experiment_num;
 
@@ -111,6 +112,7 @@ public class ButtonTap : MonoBehaviour
                         + Time.time + ","
                         + ParticipantNumber + ","
                         + round_num + ","
+                        + ie_cond[round_num] + ","
                         + td_cond[round_num] + ","
                         + com_cond + ","
                         + size_cond + ","

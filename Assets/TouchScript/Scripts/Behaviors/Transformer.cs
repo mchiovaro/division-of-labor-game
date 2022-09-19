@@ -183,7 +183,7 @@ namespace TouchScript.Behaviors
         public int from_where = 0;
 
         // read in size_condition from Exit_app_script.cs
-        private int ie_cond;
+        //private int ie_cond;
 
         private int player_type; //0 = restricted, 1 = free
         private float SPRITE_WIDTH;
@@ -196,7 +196,7 @@ namespace TouchScript.Behaviors
 
           // find conditions
           exitappscript = FindObjectOfType<Exit_app_script>();
-          ie_cond = exitappscript.ie_condition;
+          //ie_cond = exitappscript.ie_condition;
 
           // find the cells
           work_row = GameObject.FindGameObjectWithTag("work_row_middle");
