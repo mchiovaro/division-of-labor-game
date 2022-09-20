@@ -2253,7 +2253,7 @@ MonoBehaviour:
   beeRestrict: {fileID: 0}
   buttons: {fileID: 0}
   messageboxes: {fileID: 0}
-  ParticipantNumber: 2
+  ParticipantNumber: 4
   RA_initials: MC
   td_condition: 
   ie_condition: 
@@ -2398,7 +2398,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &591218154
 MonoBehaviour:
   m_ObjectHideFlags: 0
