@@ -540,7 +540,7 @@ public class Exit_app_script : MonoBehaviour
     {
 
         // read in condition orders
-        TextAsset iniFile = Resources.Load<TextAsset>("loadParams/conditions");
+        TextAsset iniFile = Resources.Load<TextAsset>("loadParams/conditions_2-3");
 
         // create string to split out rows of conditions
         string[] row = iniFile.text.Split(new char[] { '\n' });
