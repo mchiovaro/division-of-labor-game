@@ -26,11 +26,11 @@ public class ButtonTap : MonoBehaviour
     public String text;
 
     // locate message boxes
-    public GameObject message_free, message_restrict;
+    public GameObject message_free, message_free2, message_restrict, message_restrict2;
 
     // create strings for holding the sets of button names
-    List<string> freebuttons = new List<string> { "button_free_1", "button_free_2", "button_free_3", "button_free_4"};
-    List<string> restrictbuttons = new List<string> { "button_restrict_1", "button_restrict_2", "button_restrict_3", "button_restrict_4"};
+    List<string> freebuttons = new List<string> { "button_free_1", "button_free_2", "button_free_3", "button_free_4", "button_free_5"};
+    List<string> restrictbuttons = new List<string> { "button_restrict_1", "button_restrict_2", "button_restrict_3", "button_restrict_4", "button_restrict_5"};
 
     private void Start()
     {
@@ -50,10 +50,14 @@ public class ButtonTap : MonoBehaviour
       // find the text boxes
       message_free = GameObject.FindGameObjectWithTag("messagebox_free");
       message_restrict = GameObject.FindGameObjectWithTag("messagebox_restrict");
+      message_free2 = GameObject.FindGameObjectWithTag("messagebox_free2");
+      message_restrict2 = GameObject.FindGameObjectWithTag("messagebox_restrict2");
 
       // set text to blank
       message_free.GetComponent<TMP_Text>().text = "";
       message_restrict.GetComponent<TMP_Text>().text = "";
+      message_free2.GetComponent<TMP_Text>().text = "";
+      message_restrict2.GetComponent<TMP_Text>().text = "";
 
       // set up the data file if it's the first real round
       if(round_num == 1){
@@ -136,6 +140,7 @@ public class ButtonTap : MonoBehaviour
       if(freebuttons.Contains(transform.name)){
         // update the text
         message_free.GetComponent<TMP_Text>().text = text;
+        message_free2.GetComponent<TMP_Text>().text = text;
         // set wait time
         StartCoroutine(waiter());
       }
@@ -144,6 +149,7 @@ public class ButtonTap : MonoBehaviour
       if(restrictbuttons.Contains(transform.name)){
         // update the text
         message_restrict.GetComponent<TMP_Text>().text = text;
+        message_restrict2.GetComponent<TMP_Text>().text = text;
         // set wait time
         StartCoroutine(waiter());
       }
@@ -158,6 +164,7 @@ public class ButtonTap : MonoBehaviour
         // wait for three seconds then turn the message off
         yield return new WaitForSeconds(3);
         message_free.GetComponent<TMP_Text>().text = "";
+        message_free2.GetComponent<TMP_Text>().text = "";
       }
 
       // if it's a restrict button
@@ -165,6 +172,7 @@ public class ButtonTap : MonoBehaviour
         // wait for three seconds then turn the message off
         yield return new WaitForSeconds(3);
         message_restrict.GetComponent<TMP_Text>().text = "";
+        message_restrict2.GetComponent<TMP_Text>().text = "";
       }
 
     }
