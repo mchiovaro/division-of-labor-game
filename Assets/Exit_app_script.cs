@@ -14,7 +14,7 @@ public class Exit_app_script : MonoBehaviour
     public string RA_initials;
 
     // max number of pellets based on number of cells available
-    private int MAX_PELLETS = 1;
+    private int MAX_PELLETS = 7;
 
     // initialize conditions variables
     public List<int> td_condition = new List<int>(7);
@@ -458,7 +458,7 @@ public class Exit_app_script : MonoBehaviour
             if (explain_mode){
 
                 explain_mode = false;
-                MAX_PELLETS = 1; // set to full pellet count
+                MAX_PELLETS = 20; // set to full pellet count
 
                 // set up practice screen
                 ui_image.enabled = true;

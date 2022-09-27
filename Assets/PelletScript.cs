@@ -115,6 +115,7 @@ public class PelletScript : MonoBehaviour
       round_num = Camera.main.GetComponent<Exit_app_script>().round_number;
       com_cond = Camera.main.GetComponent<Exit_app_script>().com_condition;
       size_cond = Camera.main.GetComponent<Exit_app_script>().size_condition;
+      experiment_num = Camera.main.GetComponent<Exit_app_script>().experiment_num;
 
       // start a data file if this is the first round
       if(pelletID == 0 && round_num == 1) {

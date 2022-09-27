@@ -42,10 +42,10 @@ public class ButtonTap : MonoBehaviour
 
       // get the round number and other conditions from Exit_app_script
       ParticipantNumber = exitappscript.ParticipantNumber;
+      //com_cond = Camera.main.GetComponent<Exit_app_script>().com_condition;
+      //size_cond = Camera.main.GetComponent<Exit_app_script>().size_condition;
+      //experiment_num = Camera.main.GetComponent<Exit_app_script>().experiment_num;
       round_num = Camera.main.GetComponent<Exit_app_script>().round_number;
-      com_cond = Camera.main.GetComponent<Exit_app_script>().com_condition;
-      size_cond = Camera.main.GetComponent<Exit_app_script>().size_condition;
-      experiment_num = Camera.main.GetComponent<Exit_app_script>().experiment_num;
 
       // find the text boxes
       message_free = GameObject.FindGameObjectWithTag("messagebox_free");
@@ -59,13 +59,12 @@ public class ButtonTap : MonoBehaviour
       message_free2.GetComponent<TMP_Text>().text = "";
       message_restrict2.GetComponent<TMP_Text>().text = "";
 
-      // set up the data file if it's the first real round
       if(round_num == 1){
 
         // set up saving location
         string path = "Assets/Resources/Data/" + ParticipantNumber + "-buttonlog.csv";
 
-        // create writer
+        // write header
         StreamWriter writer = new StreamWriter(path, true);
         string header_string = "System.DateTime.Now,Time.time,ParticipantNumber,round_number,ie_condition,td_condition,com_condition,size_condition,experiment_num,buttonname";
         writer.WriteLine(header_string); // write the line
@@ -88,6 +87,13 @@ public class ButtonTap : MonoBehaviour
     //this happens when the pellet is tapped
     private void tappedHandler(object sender, EventArgs e)
     {
+      // update variables for saving (if placed in start - last 3 conditions end up with 0s for buttons 1 and 5 for both players)
+      round_num = Camera.main.GetComponent<Exit_app_script>().round_number;
+      com_cond = Camera.main.GetComponent<Exit_app_script>().com_condition;
+      size_cond = Camera.main.GetComponent<Exit_app_script>().size_condition;
+      experiment_num = Camera.main.GetComponent<Exit_app_script>().experiment_num;
+
+      //Debug.Log("round number = " + round_num);
 
       // save to disk if it isn't the practice round
       if(!(round_num == 0)) saveToDisk();
@@ -153,7 +159,6 @@ public class ButtonTap : MonoBehaviour
         // set wait time
         StartCoroutine(waiter());
       }
-
 
     }
 
