@@ -14,7 +14,7 @@ public class Exit_app_script : MonoBehaviour
     public string RA_initials;
 
     // max number of pellets based on number of cells available
-    private int MAX_PELLETS = 7;
+    private int MAX_PELLETS = 8;
 
     // initialize conditions variables
     public List<int> td_condition = new List<int>(7);
@@ -61,6 +61,7 @@ public class Exit_app_script : MonoBehaviour
 
     // set up for inbetween trials
     public Text ui_text;
+    public Text switch_msg;
     public RawImage ui_image;
 
     // data structures for position and time
@@ -110,7 +111,7 @@ public class Exit_app_script : MonoBehaviour
 
         // set up practice screen
         ui_image.enabled = true;
-        ui_text.text = "Red player: Tapping condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
+        ui_text.text = "Explanation Round\n\nRed player: Tapping condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
 
         //allocate memory for Data to save
         data_beeFree.allPositions = new List<Vector3>(100000); // old bee
@@ -259,6 +260,7 @@ public class Exit_app_script : MonoBehaviour
             // if space bar is pressed between trials
             if (Input.GetKey("space"))
             {
+                Debug.Log("Pressed space");
                 // remove the waiting screen and text
                 ui_image.enabled = false;
                 ui_text.text = "";
@@ -392,10 +394,35 @@ public class Exit_app_script : MonoBehaviour
           else if(!practice_mode){
 
             ui_image.enabled = true;
-            ui_text.text = "Starting over: Round number = " + round_number + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n Ready for the next round?";
+
+            if (ie_condition[round_number] == 1) {
+                if (round_number == 1){ui_text.text = "Starting over: Round one\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+                if (round_number == 2){ui_text.text = "Starting over: Round two\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+                if (round_number == 3){ui_text.text = "Starting over: Round three\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+                if (round_number == 4){ui_text.text = "Starting over: Round four\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+                if (round_number == 5){ui_text.text = "Starting over: Round five\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+                if (round_number == 6){ui_text.text = "Starting over: Round six\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+            }
+
+            if (ie_condition[round_number] == 2) {
+                if (round_number == 1){ui_text.text = "Starting over: Round one\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+                if (round_number == 2){ui_text.text = "Starting over: Round two\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+                if (round_number == 3){ui_text.text = "Starting over: Round three\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+                if (round_number == 4){ui_text.text = "Starting over: Round four\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+                if (round_number == 5){ui_text.text = "Starting over: Round five\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+                if (round_number == 6){ui_text.text = "Starting over: Round six\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+            }
+
+            if (ie_condition[round_number] == 3) {
+                if (round_number == 1){ui_text.text = "Starting over: Round one\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+                if (round_number == 2){ui_text.text = "Starting over: Round two\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+                if (round_number == 3){ui_text.text = "Starting over: Round three\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+                if (round_number == 4){ui_text.text = "Starting over: Round four\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+                if (round_number == 5){ui_text.text = "Starting over: Round five\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+                if (round_number == 6){ui_text.text = "Starting over: Round six\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + td_condition[round_number].ToString() + "\n\n Ready to begin?";}
+            }
 
           }
-
 
 
           // clear pellet data
@@ -462,7 +489,7 @@ public class Exit_app_script : MonoBehaviour
 
                 // set up practice screen
                 ui_image.enabled = true;
-                ui_text.text = "Practice Round \nRed player: Tapping condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
+                ui_text.text = "Practice Round \n\nRed player: Tapping condition " + td_condition[round_number].ToString() + ".\n Ready to practice?";
 
             }
 
@@ -494,6 +521,7 @@ public class Exit_app_script : MonoBehaviour
     // in between trials, set message screen for that td_condition
     void checkCondition()
     {
+
         // if we aren't done with the trials, ask if they are ready for the next one
         switch (td_condition[round_number])
         {
@@ -501,7 +529,34 @@ public class Exit_app_script : MonoBehaviour
             case FREE_HARD:
 
                 ui_image.enabled = true;
-                ui_text.text = "Round Finished.\nRound number = " + round_number + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n Ready for the next round?";
+
+                if (ie_condition[round_number] == 1) {
+                  if (round_number == 1){ui_text.text = "Round Finished.\nNext: Round one\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 2){ui_text.text = "Round Finished.\nNext: Round two\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 3){ui_text.text = "Round Finished.\nNext: Round three\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 4){ui_text.text = "Round Finished.\nNext: Round four\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 5){ui_text.text = "Round Finished.\nNext: Round five\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 6){ui_text.text = "Round Finished.\nNext: Round six\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                }
+
+                if (ie_condition[round_number] == 2) {
+                  if (round_number == 1){ui_text.text = "Round Finished.\nNext: Round one\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 2){ui_text.text = "Round Finished.\nNext: Round two\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 3){ui_text.text = "Round Finished.\nNext: Round three\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 4){ui_text.text = "Round Finished.\nNext: Round four\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 5){ui_text.text = "Round Finished.\nNext: Round five\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 6){ui_text.text = "Round Finished.\nNext: Round six\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                }
+
+                if (ie_condition[round_number] == 3) {
+                  if (round_number == 1){ui_text.text = "Round Finished.\nNext: Round one\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 2){ui_text.text = "Round Finished.\nNext: Round two\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 3){ui_text.text = "Round Finished.\nNext: Round three\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 4){ui_text.text = "Round Finished.\nNext: Round four\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 5){ui_text.text = "Round Finished.\nNext: Round five\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 6){ui_text.text = "Round Finished.\nNext: Round six\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + FREE_HARD.ToString() + "\n\n Ready for the next round?";}
+                }
+
 
                 break;
 
@@ -509,7 +564,33 @@ public class Exit_app_script : MonoBehaviour
             case RESTRICT_HARD:
 
                 ui_image.enabled = true;
-                ui_text.text = "Round Finished.\nRound number = " + round_number + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n Ready for the next round?";
+
+                if (ie_condition[round_number] == 1) {
+                  if (round_number == 1){ui_text.text = "Round Finished.\nNext: Round one\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 2){ui_text.text = "Round Finished.\nNext: Round two\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 3){ui_text.text = "Round Finished.\nNext: Round three\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 4){ui_text.text = "Round Finished.\nNext: Round four\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 5){ui_text.text = "Round Finished.\nNext: Round five\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 6){ui_text.text = "Round Finished.\nNext: Round six\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                }
+
+                if (ie_condition[round_number] == 2) {
+                  if (round_number == 1){ui_text.text = "Round Finished.\nNext: Round one\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 2){ui_text.text = "Round Finished.\nNext: Round two\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 3){ui_text.text = "Round Finished.\nNext: Round three\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 4){ui_text.text = "Round Finished.\nNext: Round four\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 5){ui_text.text = "Round Finished.\nNext: Round five\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 6){ui_text.text = "Round Finished.\nNext: Round six\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                }
+
+                if (ie_condition[round_number] == 3) {
+                  if (round_number == 1){ui_text.text = "Round Finished.\nNext: Round one\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 2){ui_text.text = "Round Finished.\nNext: Round two\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 3){ui_text.text = "Round Finished.\nNext: Round three\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 4){ui_text.text = "Round Finished.\nNext: Round four\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 5){ui_text.text = "Round Finished.\nNext: Round five\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 6){ui_text.text = "Round Finished.\nNext: Round six\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + RESTRICT_HARD.ToString() + "\n\n Ready for the next round?";}
+                }
 
                 break;
 
@@ -517,7 +598,33 @@ public class Exit_app_script : MonoBehaviour
             case BOTH_HARD:
 
                 ui_image.enabled = true;
-                ui_text.text = "Round Finished.\nRound number = " + round_number + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n Ready for the next round?";
+
+                if (ie_condition[round_number] == 1) {
+                  if (round_number == 1){ui_text.text = "Round Finished.\nNext: Round one\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 2){ui_text.text = "Round Finished.\nNext: Round two\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 3){ui_text.text = "Round Finished.\nNext: Round three\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 4){ui_text.text = "Round Finished.\nNext: Round four\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 5){ui_text.text = "Round Finished.\nNext: Round five\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 6){ui_text.text = "Round Finished.\nNext: Round six\n\n" + "Only RED player can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                }
+
+                if (ie_condition[round_number] == 2) {
+                  if (round_number == 1){ui_text.text = "Round Finished.\nNext: Round one\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 2){ui_text.text = "Round Finished.\nNext: Round two\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 3){ui_text.text = "Round Finished.\nNext: Round three\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 4){ui_text.text = "Round Finished.\nNext: Round four\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 5){ui_text.text = "Round Finished.\nNext: Round five\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 6){ui_text.text = "Round Finished.\nNext: Round six\n\n" + "Only BLUE player can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                }
+
+                if (ie_condition[round_number] == 3) {
+                  if (round_number == 1){ui_text.text = "Round Finished.\nNext: Round one\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 2){ui_text.text = "Round Finished.\nNext: Round two\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 3){ui_text.text = "Round Finished.\nNext: Round three\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 4){ui_text.text = "Round Finished.\nNext: Round four\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 5){ui_text.text = "Round Finished.\nNext: Round five\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                  if (round_number == 6){ui_text.text = "Round Finished.\nNext: Round six\n\n" + "BOTH players can switch" + "\nRed player: Tapping condition " + BOTH_HARD.ToString() + "\n\n Ready for the next round?";}
+                }
 
                 break;
 
